@@ -1,5 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+
+defaultTasks = ['Install']
 	
 ext {
 	updateServerId = "rmx_" + namespace
@@ -11,7 +13,31 @@ targetCompatibility = 1.7
 version = major + "." + minor + "." + patch 
 group = vendor
 
+// create Maven like provided configuration
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
+
+// minimize changes, at least for now (gradle uses 'build' by default)
+buildDir = "target"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    provided fileTree(dir: rapidminerHome + '/lib', include: '*.jar')
+}
+
 jar {
+	dependsOn configurations.runtime
+	from {
+		(configurations.runtime - configurations.provided).collect {
+      		it.isDirectory() ? it : zipTree(it)
+    	}	
+  	}
 	manifest {
 		attributes("Manifest-Version": 		"1.0",
 		"Implementation-Vendor": 	vendor,
@@ -39,17 +65,6 @@ jar {
 	}
 }
 
-// minimize changes, at least for now (gradle uses 'build' by default)
-buildDir = "target"
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile fileTree(dir: rapidminerHome + '/lib', include: '*.jar')
-}
-
 gradle.taskGraph.whenReady {taskGraph ->
 	if (!taskGraph.hasTask('release')) {
 		version = major + "." + minor + "." + patch + "-SNAPSHOT"
@@ -61,3 +76,4 @@ task install(type: Copy) {
 	from jar
 	into rapidminerHome + "/lib/plugins"
 }
+
