@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<operators name="template" version="5.0"
+	docbundle="com/rapidminer/resources/i18n/OperatorsDocFileEncryption">
+	<group key="">
+		<group key="utility">
+			<group key="files">
+				<operator>
+					<key>encrypt_file</key>
+					<class>com.rapidminer.operator.nio.file.EncryptFileOperator</class>
+				</operator>
+				<operator>
+					<key>decrypt_file</key>
+					<class>com.rapidminer.operator.nio.file.DecryptFileOperator</class>
+				</operator>
+			</group>
+		</group>
+	</group>
+</operators>

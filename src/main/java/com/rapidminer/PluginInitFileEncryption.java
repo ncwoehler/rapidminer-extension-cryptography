@@ -29,7 +29,7 @@ import com.rapidminer.gui.MainFrame;
  * 
  * @author Sebastian Land
  */
-public class PluginInitTemplate {
+public class PluginInitFileEncryption {
 	
 	/**
 	 * This method will be called directly after the extension is initialized.
