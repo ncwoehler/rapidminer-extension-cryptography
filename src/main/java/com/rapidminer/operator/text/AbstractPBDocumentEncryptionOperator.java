@@ -5,13 +5,15 @@ import java.util.List;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
-import com.rapidminer.operator.EncryptionAlgorithmProvider;
+import com.rapidminer.operator.PBEAlgorithmParameterHandler;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.ports.InputPort;
+import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.MDTransformationRule;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.UndefinedParameterError;
@@ -24,19 +26,24 @@ import com.rapidminer.parameter.UndefinedParameterError;
  * @author Nils Woehler
  * 
  */
-public abstract class AbstractDocumentEncryptorOperator extends Operator {
+public abstract class AbstractPBDocumentEncryptionOperator extends Operator {
 
-	public static final String PARAMETER_FILE_INPUT = "document_input";
-	public static final String PARAMETER_FILE_OUTPUT = "document_output";
+	public static final String DOCUMENT_INPUT = "document_input";
+	public static final String DOCUMENT_OUTPUT = "document_output";
 
 	/**
 	 * Used to test if encryption works with the current parameters.
 	 */
 	private static final String RANDOM_TEXT = "This is sparta!";
 
-	private static final EncryptionAlgorithmProvider ALGORITHM_PROVIDER = new EncryptionAlgorithmProvider();
+	private static final PBEAlgorithmParameterHandler ALGORITHM_PROVIDER = new PBEAlgorithmParameterHandler();
 
-	public AbstractDocumentEncryptorOperator(OperatorDescription description) {
+	private final InputPort documentInput = getInputPorts().createPort(
+			DOCUMENT_INPUT, Document.class);
+	private final OutputPort documentOut = getOutputPorts().createPort(
+			DOCUMENT_OUTPUT);
+
+	public AbstractPBDocumentEncryptionOperator(OperatorDescription description) {
 		super(description);
 
 		getTransformer().addRule(new MDTransformationRule() {
@@ -44,22 +51,30 @@ public abstract class AbstractDocumentEncryptorOperator extends Operator {
 			@Override
 			public void transformMD() {
 				try {
-					transformText(configureEncryptor(), RANDOM_TEXT);
+					StandardPBEStringEncryptor encryptor = configureEncryptor();
+					encryptor.decrypt(encryptor.encrypt(RANDOM_TEXT));
 				} catch (Throwable t) {
 					addError(new SimpleProcessSetupError(Severity.ERROR,
-							getPortOwner(), "file_encryption_error", t
+							getPortOwner(), "text_encryption_error", t
 									.getLocalizedMessage()));
 				}
 			}
 
 		});
+		getTransformer().addPassThroughRule(documentInput, documentOut);
 	}
 
 	@Override
 	public void doWork() throws OperatorException {
 
-		// FIXME
+		// retrieve document
+		Document input = documentInput.getData(Document.class);
 
+		// encrypt/decrypt text
+		String text = transformText(configureEncryptor(), input.getText());
+
+		// deliver transformed document
+		documentOut.deliver(new Document(text));
 	}
 
 	/**
@@ -86,7 +101,7 @@ public abstract class AbstractDocumentEncryptorOperator extends Operator {
 	@Override
 	public List<ParameterType> getParameterTypes() {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
-		parameterTypes.addAll(ALGORITHM_PROVIDER.getParameterTypes());
+		parameterTypes.addAll(ALGORITHM_PROVIDER.getParameterTypes(this));
 		return parameterTypes;
 	}
 }

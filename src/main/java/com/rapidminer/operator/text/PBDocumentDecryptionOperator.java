@@ -12,9 +12,9 @@ import com.rapidminer.operator.UserError;
  * @author Nils Woehler
  * 
  */
-public class DecryptDocumentOperator extends AbstractDocumentEncryptorOperator {
+public class PBDocumentDecryptionOperator extends AbstractPBDocumentEncryptionOperator {
 
-	public DecryptDocumentOperator(OperatorDescription description) {
+	public PBDocumentDecryptionOperator(OperatorDescription description) {
 		super(description);
 	}
 

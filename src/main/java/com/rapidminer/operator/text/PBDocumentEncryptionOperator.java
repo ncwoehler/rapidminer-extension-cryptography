@@ -11,9 +11,9 @@ import com.rapidminer.operator.UserError;
  * @author Nils Woehler
  * 
  */
-public class EncryptDocumentOperator extends AbstractDocumentEncryptorOperator {
+public class PBDocumentEncryptionOperator extends AbstractPBDocumentEncryptionOperator {
 
-	public EncryptDocumentOperator(OperatorDescription description) {
+	public PBDocumentEncryptionOperator(OperatorDescription description) {
 		super(description);
 	}
 

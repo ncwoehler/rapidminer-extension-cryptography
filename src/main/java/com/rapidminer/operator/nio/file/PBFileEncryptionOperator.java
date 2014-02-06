@@ -10,9 +10,9 @@ import com.rapidminer.operator.OperatorDescription;
  * @author Nils Woehler
  * 
  */
-public class EncryptFileOperator extends AbstractFileEncryptorOperator {
+public class PBFileEncryptionOperator extends AbstractPBFileEncryptionOperator {
 
-	public EncryptFileOperator(OperatorDescription description) {
+	public PBFileEncryptionOperator(OperatorDescription description) {
 		super(description);
 	}
 

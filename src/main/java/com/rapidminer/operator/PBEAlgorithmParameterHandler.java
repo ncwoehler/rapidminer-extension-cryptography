@@ -1,0 +1,107 @@
+package com.rapidminer.operator;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+
+import com.rapidminer.parameter.ParameterType;
+import com.rapidminer.parameter.ParameterTypeCategory;
+import com.rapidminer.parameter.ParameterTypePassword;
+import com.rapidminer.parameter.ParameterTypeSuggestion;
+import com.rapidminer.parameter.UndefinedParameterError;
+import com.rapidminer.parameter.conditions.EqualTypeCondition;
+
+public class PBEAlgorithmParameterHandler {
+
+	public static final String PARAMETER_PASSWORD = "password";
+
+	public static final String PARAMETER_ALGORITHM_STRENGTH = "algorithm_streng";
+	public static final String WEAK_ALGORITHM = "weak";
+	public static final String MEDIUM_ALGORITHM = "medium";
+	public static final String STRONG_ALGORITHM = "strong";
+	public static final String USER_DEFINED_ALGORITHM = "user defined";
+	public static final String[] ALGORITHM_STRENGTHS = new String[] {
+			WEAK_ALGORITHM, MEDIUM_ALGORITHM, STRONG_ALGORITHM,
+			USER_DEFINED_ALGORITHM };
+	public static final int USER_DEFINED_ALGORITHM_INDEX = 3;
+
+	public static final String PARAMETER_ALGORITHM = "algorithm";
+
+	public static final String WEAK_ALGORITHM_NAME = "PBEWITHSHA256AND128BITAES-CBC-BC";
+	public static final String MEDIUM_ALGORITHM_NAME = "PBEWITHSHA256AND192BITAES-CBC-BC";
+	public static final String STRONG_ALGORITHM_NAME = "PBEWITHSHA256AND256BITAES-CBC-BC";
+	
+	// presented user defined algorithm in user friendly fashion
+	public static final String DEFAULT_USER_ALGORITHM_NAME = "SHA256 and 256BITAES-CBC-BC";
+
+	/**
+	 * Creates a byte encryptor according to the specified parameters.
+	 */
+	public StandardPBEByteEncryptor configureByteEncryptor(Operator op)
+			throws UndefinedParameterError {
+		StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
+		encryptor.setAlgorithm(getAlgorithm(op));
+		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
+		return encryptor;
+	}
+
+	/**
+	 * Creates a string encryptor according to the specified parameters.
+	 */
+	public StandardPBEStringEncryptor configureStringEncryptor(Operator op)
+			throws UndefinedParameterError {
+		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		encryptor.setAlgorithm(getAlgorithm(op));
+		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
+		return encryptor;
+	}
+
+	private String getAlgorithm(Operator op)
+			throws UndefinedParameterError {
+		switch (op.getParameter(PARAMETER_ALGORITHM_STRENGTH)) {
+		case WEAK_ALGORITHM:
+			return WEAK_ALGORITHM_NAME;
+		case MEDIUM_ALGORITHM:
+			return MEDIUM_ALGORITHM_NAME;
+		case STRONG_ALGORITHM:
+			return STRONG_ALGORITHM_NAME;
+		default:
+			return PBEAlgorithmSuggestionProvider.toPasswordIdentifier(op
+					.getParameterAsString(PARAMETER_ALGORITHM));
+		}
+	}
+
+	/**
+	 * @return the list of parameter types used to configure an encryptor
+	 */
+	public List<ParameterType> getParameterTypes(Operator op) {
+		List<ParameterType> types = new LinkedList<>();
+
+		ParameterTypePassword password = new ParameterTypePassword(
+				PARAMETER_PASSWORD,
+				"The password used to encrypt/decrypt the file.");
+		password.setOptional(false);
+		password.setExpert(true);
+		types.add(password);
+
+		types.add(new ParameterTypeCategory(
+				PARAMETER_ALGORITHM_STRENGTH,
+				"Defines the algorithm strength used for  encryption/decryption.",
+				ALGORITHM_STRENGTHS, 1, false));
+
+		ParameterTypeSuggestion suggestion = new ParameterTypeSuggestion(
+				PARAMETER_ALGORITHM,
+				"The algorithm used to encrypt/decrypt the file.",
+				PBEAlgorithmSuggestionProvider.INSTANCE,
+				StandardPBEByteEncryptor.DEFAULT_ALGORITHM, true);
+		suggestion.registerDependencyCondition(new EqualTypeCondition(op,
+				PARAMETER_ALGORITHM_STRENGTH, ALGORITHM_STRENGTHS, true,
+				USER_DEFINED_ALGORITHM_INDEX));
+		types.add(suggestion);
+
+		return types;
+	}
+
+}

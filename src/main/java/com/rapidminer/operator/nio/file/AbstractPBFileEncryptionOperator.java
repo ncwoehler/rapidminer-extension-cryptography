@@ -12,7 +12,7 @@ import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.exceptions.EncryptionInitializationException;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
-import com.rapidminer.operator.EncryptionAlgorithmProvider;
+import com.rapidminer.operator.PBEAlgorithmParameterHandler;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
@@ -37,7 +37,7 @@ import com.rapidminer.tools.Tools;
  * @author Nils Woehler
  * 
  */
-public abstract class AbstractFileEncryptorOperator extends Operator {
+public abstract class AbstractPBFileEncryptionOperator extends Operator {
 
 	public static final String PARAMETER_FILE_INPUT = "file_input";
 	public static final String PARAMETER_FILE_OUTPUT = "file_output";
@@ -59,9 +59,9 @@ public abstract class AbstractFileEncryptorOperator extends Operator {
 	private static final byte[] RANDOM_BYTES = new byte[] { 81, 79, 11, 28, 64,
 			42, 41 };
 
-	private static final EncryptionAlgorithmProvider ALGORITHM_PROVIDER = new EncryptionAlgorithmProvider();
+	private static final PBEAlgorithmParameterHandler ALGORITHM_PROVIDER = new PBEAlgorithmParameterHandler();
 
-	public AbstractFileEncryptorOperator(OperatorDescription description) {
+	public AbstractPBFileEncryptionOperator(OperatorDescription description) {
 		super(description);
 
 		getTransformer().addRule(new MDTransformationRule() {
@@ -69,7 +69,8 @@ public abstract class AbstractFileEncryptorOperator extends Operator {
 			@Override
 			public void transformMD() {
 				try {
-					transformFile(configureEncryptor(), RANDOM_BYTES);
+					StandardPBEByteEncryptor encryptor = configureEncryptor();
+					encryptor.decrypt(encryptor.encrypt(RANDOM_BYTES));
 				} catch (Throwable t) {
 					addError(new SimpleProcessSetupError(Severity.ERROR,
 							getPortOwner(), "file_encryption_error", t
@@ -170,7 +171,7 @@ public abstract class AbstractFileEncryptorOperator extends Operator {
 					}
 				}));
 
-		parameterTypes.addAll(ALGORITHM_PROVIDER.getParameterTypes());
+		parameterTypes.addAll(ALGORITHM_PROVIDER.getParameterTypes(this));
 		
 		parameterTypes.add(FileOutputPortHandler.makeFileParameterType(
 				getParameterHandler(), PARAMETER_FILE_OUTPUT,
