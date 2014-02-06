@@ -22,6 +22,10 @@
  */
 package com.rapidminer;
 
+import java.security.Security;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import com.rapidminer.gui.MainFrame;
 
 /**
@@ -36,7 +40,11 @@ public class PluginInitFileEncryption {
 	 * This is the first hook during start up. No initialization of the operators
 	 * or renderers has taken place when this is called.
 	 */
-	public static void initPlugin() {}
+	public static void initPlugin() {
+		Security.addProvider(new BouncyCastleProvider());
+		
+		//TODO add check and if not yet installed prompt the user for installation and restart
+	}
 	
 	/**
 	 * This method is called during start up as the second hook. It is 
