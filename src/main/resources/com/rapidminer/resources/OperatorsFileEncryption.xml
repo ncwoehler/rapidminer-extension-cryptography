@@ -3,15 +3,31 @@
 	docbundle="com/rapidminer/resources/i18n/OperatorsDocFileEncryption">
 	<group key="">
 		<group key="utility">
-			<group key="files">
-				<operator>
-					<key>encrypt_file</key>
-					<class>com.rapidminer.operator.nio.file.EncryptFileOperator</class>
-				</operator>
-				<operator>
-					<key>decrypt_file</key>
-					<class>com.rapidminer.operator.nio.file.DecryptFileOperator</class>
-				</operator>
+			<group key="encryption">
+				<group key="files">
+					<operator>
+						<key>pbe_encrypt_file</key>
+						<class>com.rapidminer.operator.nio.file.PBFileEncryptionOperator
+						</class>
+					</operator>
+					<operator>
+						<key>pbe_decrypt_file</key>
+						<class>com.rapidminer.operator.nio.file.PBFileDecryptionOperator
+						</class>
+					</operator>
+				</group>
+				<group key="documents">
+					<operator>
+						<key>pbe_encrypt_document</key>
+						<class>com.rapidminer.operator.text.PBDocumentEncryptionOperator
+						</class>
+					</operator>
+					<operator>
+						<key>pbe_decrypt_document</key>
+						<class>com.rapidminer.operator.text.PBDocumentDecryptionOperator
+						</class>
+					</operator>
+				</group>
 			</group>
 		</group>
 	</group>
