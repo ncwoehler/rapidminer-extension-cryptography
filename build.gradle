@@ -1,9 +1,90 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+defaultTasks = ['Install']
+
 ext {
-	rapidminerHome = "../rapidminer"
+	updateServerId = "rmx_" + namespace
+	rapidminerHome = "../rapidminer-original"
 }
 
-apply from: file("build-extension.gradle")
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+version = major + "." + minor + "." + patch
+group = vendor
+
+// ###################
+// Dirty hack to create Maven like provided configuration
+// See http://issues.gradle.org/browse/GRADLE-784
+configurations { provided }
+
+sourceSets {
+	main.compileClasspath += configurations.provided
+	test.compileClasspath += configurations.provided
+	test.runtimeClasspath += configurations.provided
+}
+
+eclipse.classpath.plusConfigurations += configurations.provided
+
+// ####################
+
+// minimize changes, at least for now (gradle uses 'build' by default)
+buildDir = "target"
+
+repositories { mavenCentral() }
 
 dependencies {
-    compile 'org.jasypt:jasypt:1.9.1'
+	provided fileTree(dir: rapidminerHome + '/lib', include: '*.jar')
 }
+
+jar {
+	// adds runtime dependencies to jar package
+	dependsOn configurations.runtime
+	from ({configurations.runtime.collect {it.isDirectory() ? it : zipTree(it)}}) {
+		// remove all signature files
+		exclude "META-INF/*.SF"
+		exclude "META-INF/*.DSA"
+		exclude "META-INF/*.RSA"
+	}
+	manifest {
+		attributes("Manifest-Version": 		"1.0",
+		"Implementation-Vendor": 	vendor,
+		"Implementation-Title":		name,
+		"Implementation-URL":		homepage,
+		"Implementation-Version": 	version,
+		"Specification-Title": 		name,
+		"Specification-Version":	version,
+		"RapidMiner-Version":		minRMVersion,
+		"RapidMiner-Type":			"RapidMiner_Extension",
+		"Plugin-Dependencies":		extensionDependencies,
+
+		// Definition of important files
+		"Extension-ID":				updateServerId,
+		"Namespace":				namespace,
+		"Initialization-Class":		initClass,
+		"IOObject-Descriptor":		objectDefinition,
+		"Operator-Descriptor":		operatorDefinition,
+		"ParseRule-Descriptor":		parseRuleDefinition,
+		"Group-Descriptor":			groupProperties,
+		"Error-Descriptor":			errorDescription,
+		"UserError-Descriptor":		userErrors,
+		"GUI-Descriptor":			guiDescription
+		)
+	}
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+	if (!taskGraph.hasTask('release')) {
+		version = major + "." + minor + "." + patch + "-SNAPSHOT"
+	}
+}
+
+// Copies outputs of jar to the plugins directory of RapidMiner
+task install(type: Copy, dependsOn: jar) {
+	from jar
+	into rapidminerHome + "/lib/plugins"
+}
+
+apply from: file('dependencies.gradle')
+

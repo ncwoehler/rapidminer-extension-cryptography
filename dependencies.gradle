@@ -1,0 +1,4 @@
+dependencies {
+	compile 'org.jasypt:jasypt:1.9.1'
+	provided 'org.bouncycastle:bcprov-jdk15on:1.50'
+}
