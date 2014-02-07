@@ -3,6 +3,7 @@ package com.rapidminer.operator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
@@ -32,9 +33,9 @@ public class PBEAlgorithmParameterHandler {
 	public static final String WEAK_ALGORITHM_NAME = "PBEWITHSHA256AND128BITAES-CBC-BC";
 	public static final String MEDIUM_ALGORITHM_NAME = "PBEWITHSHA256AND192BITAES-CBC-BC";
 	public static final String STRONG_ALGORITHM_NAME = "PBEWITHSHA256AND256BITAES-CBC-BC";
-	
+
 	// presented user defined algorithm in user friendly fashion
-	public static final String DEFAULT_USER_ALGORITHM_NAME = "SHA256 and 256BITAES-CBC-BC";
+	public static final String DEFAULT_USER_ALGORITHM_NAME = "SHA256 and 128BITAES-CBC-BC";
 
 	/**
 	 * Creates a byte encryptor according to the specified parameters.
@@ -44,6 +45,7 @@ public class PBEAlgorithmParameterHandler {
 		StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
+		encryptor.setProvider(new BouncyCastleProvider());
 		return encryptor;
 	}
 
@@ -55,11 +57,11 @@ public class PBEAlgorithmParameterHandler {
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
+		encryptor.setProvider(new BouncyCastleProvider());
 		return encryptor;
 	}
 
-	private String getAlgorithm(Operator op)
-			throws UndefinedParameterError {
+	private String getAlgorithm(Operator op) throws UndefinedParameterError {
 		switch (op.getParameter(PARAMETER_ALGORITHM_STRENGTH)) {
 		case WEAK_ALGORITHM:
 			return WEAK_ALGORITHM_NAME;
@@ -95,7 +97,7 @@ public class PBEAlgorithmParameterHandler {
 				PARAMETER_ALGORITHM,
 				"The algorithm used to encrypt/decrypt the file.",
 				PBEAlgorithmSuggestionProvider.INSTANCE,
-				StandardPBEByteEncryptor.DEFAULT_ALGORITHM, true);
+				DEFAULT_USER_ALGORITHM_NAME, true);
 		suggestion.registerDependencyCondition(new EqualTypeCondition(op,
 				PARAMETER_ALGORITHM_STRENGTH, ALGORITHM_STRENGTHS, true,
 				USER_DEFINED_ALGORITHM_INDEX));
