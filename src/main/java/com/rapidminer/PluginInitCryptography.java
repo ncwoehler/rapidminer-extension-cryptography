@@ -1,7 +1,7 @@
 /*
  *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2014 by Nils Wöhler
+ *  Copyright (C) 2014 by Nils Woehler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -36,7 +36,7 @@ import com.rapidminer.tools.Tools;
  * 
  * @author Sebastian Land
  */
-public class PluginInitEncryption {
+public class PluginInitCryptography {
 
 	public static final String BC_JAR_NAME = "bcprov-jdk15on-150.jar";
 
@@ -59,7 +59,7 @@ public class PluginInitEncryption {
 
 			// register bouncy castle provider to plugin classloader
 			registerBCProviderJar(bcprovider,
-					(URLClassLoader) PluginInitEncryption.class
+					(URLClassLoader) PluginInitCryptography.class
 							.getClassLoader());
 		} catch (IOException | RepositoryException e) {
 			throw new RuntimeException("Error loading BC provider jar.", e);

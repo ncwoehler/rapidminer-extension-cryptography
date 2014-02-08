@@ -1,7 +1,7 @@
 /*
  *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2014 by Nils Wöhler
+ *  Copyright (C) 2014 by Nils Woehler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -25,14 +25,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.DecoderException;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
-import org.jasypt.exceptions.EncryptionInitializationException;
-import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.PBEEncryptorConfigurator;
+import com.rapidminer.operator.PBCryptographyConfigurator;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
@@ -54,10 +54,11 @@ import com.rapidminer.tools.Tools;
  * @author Nils Woehler
  * 
  */
-public abstract class AbstractPBFileEncryptionOperator extends Operator {
+public abstract class AbstractPBFileCryptographyOperator extends Operator {
 
 	public static final String PARAMETER_FILE_INPUT = "file_input";
 	public static final String PARAMETER_FILE_OUTPUT = "file_output";
+	public static final String PARAMETER_BASE64 = "base64";
 	public static final String PARAMETER_OVERRIDE = "override";
 
 	private final InputPort fileInput = getInputPorts()
@@ -76,9 +77,9 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 	private static final byte[] RANDOM_BYTES = new byte[] { 81, 79, 11, 28, 64,
 			42, 41 };
 
-	private static final PBEEncryptorConfigurator ALGORITHM_PROVIDER = new PBEEncryptorConfigurator();
+	private static final PBCryptographyConfigurator ALGORITHM_PROVIDER = new PBCryptographyConfigurator();
 
-	public AbstractPBFileEncryptionOperator(OperatorDescription description) {
+	public AbstractPBFileCryptographyOperator(OperatorDescription description) {
 		super(description);
 
 		getTransformer().addRule(new MDTransformationRule() {
@@ -90,12 +91,13 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 					encryptor.decrypt(encryptor.encrypt(RANDOM_BYTES));
 				} catch (Throwable t) {
 					addError(new SimpleProcessSetupError(Severity.ERROR,
-							getPortOwner(), "file_encryption_error", t
+							getPortOwner(), "file.encryption_error", t
 									.getLocalizedMessage()));
 				}
 			}
 
 		});
+		getTransformer().addPassThroughRule(fileInput, fileOutput);
 	}
 
 	@Override
@@ -105,18 +107,31 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 		if (isParameterSet(PARAMETER_FILE_OUTPUT)
 				&& getParameterAsFile(PARAMETER_FILE_OUTPUT).exists()
 				&& !getParameterAsBoolean(PARAMETER_OVERRIDE)) {
-			throw new UserError(this, "output_file_already_exists");
+			throw new UserError(this, "file.output_file_already_exists");
 		}
 
 		// read input file
 		byte[] fileContent = readInputFile();
 
+		// in case of decryption and base64 encoding, decode first
+		if (!isEncrypting() && getParameterAsBoolean(PARAMETER_BASE64)) {
+			try {
+				fileContent = Base64.decode(fileContent);
+			} catch (DecoderException e) {
+				throw new UserError(this, e, "file.base64_decoding_failed");
+			}
+		}
+
 		// transform file
-		try {
-			fileContent = transformFile(configureEncryptor(), fileContent);
-		} catch (EncryptionOperationNotPossibleException
-				| EncryptionInitializationException e) {
-			throw new UserError(this, e, "encryption_not_possible");
+		fileContent = transformFile(configureEncryptor(), fileContent);
+
+		// in case of encryption and base64 encoding, decode encrypted output
+		if (isEncrypting() && getParameterAsBoolean(PARAMETER_BASE64)) {
+			try {
+				fileContent = Base64.encode(fileContent);
+			} catch (DecoderException e) {
+				throw new UserError(this, e, "file.base64_encoding_failed");
+			}
 		}
 
 		// write encrypted file to output
@@ -191,6 +206,9 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 
 		parameterTypes.addAll(ALGORITHM_PROVIDER.getParameterTypes(this));
 
+		parameterTypes.add(new ParameterTypeBoolean(PARAMETER_BASE64,
+				"If checked the output will be Base64 encoded.", false, true));
+
 		parameterTypes.add(FileOutputPortHandler.makeFileParameterType(
 				getParameterHandler(), PARAMETER_FILE_OUTPUT,
 				new PortProvider() {
@@ -203,7 +221,10 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 
 		parameterTypes.add(new ParameterTypeBoolean(PARAMETER_OVERRIDE,
 				"If checked an already existing file will be overwritten.",
-				false));
+				false, false));
+
 		return parameterTypes;
 	}
+
+	protected abstract boolean isEncrypting();
 }

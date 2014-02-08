@@ -1,7 +1,7 @@
 /*
  *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2014 by Nils Wöhler
+ *  Copyright (C) 2014 by Nils Woehler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +40,7 @@ import com.rapidminer.parameter.conditions.EqualTypeCondition;
  * @author Nils Woehler
  * 
  */
-public class PBEEncryptorConfigurator {
+public class PBCryptographyConfigurator {
 
 	public static final String PARAMETER_PASSWORD = "password";
 

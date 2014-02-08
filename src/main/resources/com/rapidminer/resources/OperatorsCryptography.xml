@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <operators name="template" version="5.0"
-	docbundle="com/rapidminer/resources/i18n/OperatorsDocEncryption">
+	docbundle="com/rapidminer/resources/i18n/OperatorsDocCryptography">
 	<group key="">
 		<group key="utility">
 			<group key="files">
-				<group key="encryption">
+				<group key="cryptography">
 					<operator>
 						<icon>lock-icon.png</icon>
 						<key>pbe_encrypt_file</key>
@@ -21,7 +21,7 @@
 			</group>
 		</group>
 		<group key="text_processing">
-			<group key="encryption">
+			<group key="cryptography">
 				<operator>
 					<icon>lock-icon.png</icon>
 					<key>pbe_encrypt_document</key>
