@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<operatorHelp lang="en_EN">
+
+
+	<!-- Files -->
+	<operator>
+		<name>Encrypt File (Password)</name>
+		<key>pbe_encrypt_file</key>
+	</operator>
+	<operator>
+		<name>Decrypt File (Password)</name>
+		<key>pbe_decrypt_file</key>
+	</operator>
+
+	<!-- Documents -->
+	<operator>
+		<name>Encrypt Document (Password)</name>
+		<key>pbe_encrypt_document</key>
+	</operator>
+	<operator>
+		<name>Decrypt Document (Password)</name>
+		<key>pbe_decrypt_document</key>
+	</operator>
+
+	<group>
+		<key>cryptography</key>
+		<name>Cryptography</name>
+	</group>
+</operatorHelp>

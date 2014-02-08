@@ -1,6 +1,8 @@
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
+/bin
+/build
+.gradle/
+.settings/gradle/org.springsource.ide.eclipse.gradle.core.prefs
+.settings/gradle/org.springsource.ide.eclipse.gradle.refresh.prefs
+.settings/org.eclipse.jdt.core.prefs
+target/
+.settings/gradle

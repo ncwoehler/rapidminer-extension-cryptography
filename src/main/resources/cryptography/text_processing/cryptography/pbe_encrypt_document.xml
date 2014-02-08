@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../../../rapidminerreferencemanual/documentation2html.xsl"?>
+<p1:documents xmlns:p1="http://rapid-i.com/schemas/documentation/reference/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://rapid-i.com/schemas/documentation/reference/1.0/documentation.xsd">
+	<!-- LAST CORRECTIONS: 22/JAN/2014 -->
+	<operator key="operator.encryption:pbe_encrypt_document"
+		locale="en" version="1.0.000">
+		<title>Encrypt Document (Password)</title>
+		<synopsis>Operator for password-based document encryption.</synopsis>
+		<text>
+			<paragraph>The operator can be used to encrypt a document with a
+				password-based algorithm.
+			</paragraph>
+		</text>
+		<inputPorts>
+			<port name="document" type="com.rapidminer.operator.text.Document">
+				The document object which should be
+				encrypted.
+			</port>
+		</inputPorts>
+		<outputPorts>
+			<port name="document" type="com.rapidminer.operator.text.Document">
+				The encrypted input document is
+				outputted
+				here.
+			</port>
+		</outputPorts>
+
+		<!-- description of the parameters and the corresponding values -->
+		<parameters>
+			<parameter key="password" type="password">
+				The password that should be
+				used for document encryption.
+			</parameter>
+			<parameter key="algorithm_strength" type="selection"
+				default="medium">
+				This parameter allows to select the strength of the algorithm used
+				to encrypt the document.
+				<values>
+					<value value="weak">This option selects the algorithm 'SHA1' to
+						digest the password and 'RC2' to encrypt the document with the
+						digested password.
+					</value>
+					<value value="medium">This option selects the algorithm 'MD5' to
+						digest the password and '256BITAES-CBC-OPENSSL' to encrypt the
+						document with the
+						digested password. The 256 bit AES encryption is
+						a
+						very secure algorithm but its secureness strongly depends on the
+						password
+						strength. Therefore it is recommended to use a password
+						with
+						at
+						least 20 characters.
+					</value>
+					<value value="strong">
+						This option selects the algorithm 'SHA256' to
+						digest the password
+						and '256BITAES-CBC-BC' to encrypt the document
+						with the
+						digested
+						password. The 256 bit AES encryption is a
+						very secure algorithm but
+						its secureness strongly depends on the
+						password
+						strength. Therefore
+						it is recommended to use a password
+						with
+						at
+						least 20 characters.
+						<b>CAUTION:</b>
+						This option will not work if the JCE unlimited strength
+						jurisdiction
+						policy documents have not been installed for the Java
+						VM
+						running RapidMiner.
+					</value>
+					<value value="user_defined">This option allows you to directly select the
+						algorithm that should be used to encrypt the document. Only
+						algorithms
+						working on the current setup are being shown.
+						In case the
+						JCE
+						unlimited strength
+						jurisdiction
+						policy documents have been
+						installed,
+						more algorithms will show up which might not work on
+						other
+						machines without the JCE policy documents installed.
+					</value>
+				</values>
+			</parameter>
+		</parameters>
+
+		<relatedDocuments>
+			<!-- ... -->
+		</relatedDocuments>
+	</operator>
+</p1:documents>
