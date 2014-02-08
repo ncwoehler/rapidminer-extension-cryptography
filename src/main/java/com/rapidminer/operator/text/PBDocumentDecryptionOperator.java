@@ -25,7 +25,7 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.UserError;
 
 /**
- * Decrypts text.
+ * An operator for decrypting documents.
  * 
  * @author Nils Woehler
  * 
@@ -42,8 +42,7 @@ public class PBDocumentDecryptionOperator extends AbstractPBDocumentEncryptionOp
 		try {
 			return encryptor.decrypt(text);
 		} catch (EncryptionOperationNotPossibleException e) {
-			throw new UserError(this, "text_decryption_failed"); 
-			//TODO add error message asken the user to check password and algorithm
+			throw new UserError(this, "text.decryption_failed"); 
 		}
 	}
 

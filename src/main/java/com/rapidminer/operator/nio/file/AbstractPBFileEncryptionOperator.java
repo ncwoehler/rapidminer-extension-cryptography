@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.Security;
 import java.util.List;
 
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
@@ -33,7 +32,7 @@ import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.PBEAlgorithmParameterHandler;
+import com.rapidminer.operator.PBEEncryptorConfigurator;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
@@ -48,9 +47,9 @@ import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.Tools;
 
 /**
- * This operator takes a file as input and encrypts it to according the
- * specified algorithm and password. Password based algorithms are taken from
- * providers registered to {@link Security}.
+ * The abstract super class for all PBE file encryption/decryption operators.
+ * The operator has a file input and a file output. Furthermore the user is able
+ * to select the algorithm strength and password.
  * 
  * @author Nils Woehler
  * 
@@ -77,7 +76,7 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 	private static final byte[] RANDOM_BYTES = new byte[] { 81, 79, 11, 28, 64,
 			42, 41 };
 
-	private static final PBEAlgorithmParameterHandler ALGORITHM_PROVIDER = new PBEAlgorithmParameterHandler();
+	private static final PBEEncryptorConfigurator ALGORITHM_PROVIDER = new PBEEncryptorConfigurator();
 
 	public AbstractPBFileEncryptionOperator(OperatorDescription description) {
 		super(description);
@@ -130,11 +129,12 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 					getParameterAsFile(PARAMETER_FILE_OUTPUT), e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Creates and configures a byte encryptor.
 	 */
-	protected StandardPBEByteEncryptor configureEncryptor() throws UndefinedParameterError {
+	protected StandardPBEByteEncryptor configureEncryptor()
+			throws UndefinedParameterError {
 		return ALGORITHM_PROVIDER.configureByteEncryptor(this);
 	}
 
@@ -190,7 +190,7 @@ public abstract class AbstractPBFileEncryptionOperator extends Operator {
 				}));
 
 		parameterTypes.addAll(ALGORITHM_PROVIDER.getParameterTypes(this));
-		
+
 		parameterTypes.add(FileOutputPortHandler.makeFileParameterType(
 				getParameterHandler(), PARAMETER_FILE_OUTPUT,
 				new PortProvider() {

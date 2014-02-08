@@ -33,15 +33,18 @@ import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.EqualTypeCondition;
 
 /**
+ * This class is used for providing parameters used for password based encryption/decryption algorithms
+ * like passwords, algorithm, etc.
+ * These parameters are then being used to configure a Byte or String encryptor.
  * 
  * @author Nils Woehler
- *
+ * 
  */
-public class PBEAlgorithmParameterHandler {
+public class PBEEncryptorConfigurator {
 
 	public static final String PARAMETER_PASSWORD = "password";
 
-	public static final String PARAMETER_ALGORITHM_STRENGTH = "algorithm_streng";
+	public static final String PARAMETER_ALGORITHM_STRENGTH = "algorithm_strength";
 	public static final String WEAK_ALGORITHM = "weak";
 	public static final String MEDIUM_ALGORITHM = "medium";
 	public static final String STRONG_ALGORITHM = "strong";
@@ -53,12 +56,12 @@ public class PBEAlgorithmParameterHandler {
 
 	public static final String PARAMETER_ALGORITHM = "algorithm";
 
-	public static final String WEAK_ALGORITHM_NAME = "PBEWITHSHA256AND128BITAES-CBC-BC";
-	public static final String MEDIUM_ALGORITHM_NAME = "PBEWITHSHA256AND192BITAES-CBC-BC";
+	public static final String WEAK_ALGORITHM_NAME = "PBEWITHSHA1ANDRC2";
+	public static final String MEDIUM_ALGORITHM_NAME = "PBEWITHMD5AND256BITAES-CBC-OPENSSL";
 	public static final String STRONG_ALGORITHM_NAME = "PBEWITHSHA256AND256BITAES-CBC-BC";
 
 	// presented user defined algorithm in user friendly fashion
-	public static final String DEFAULT_USER_ALGORITHM_NAME = "SHA256 and 128BITAES-CBC-BC";
+	public static final String DEFAULT_USER_ALGORITHM_NAME = "MD5 and 256BITAES-CBC-OPENSSL";
 
 	/**
 	 * Creates a byte encryptor according to the specified parameters.
@@ -93,7 +96,7 @@ public class PBEAlgorithmParameterHandler {
 		case STRONG_ALGORITHM:
 			return STRONG_ALGORITHM_NAME;
 		default:
-			return PBEAlgorithmSuggestionProvider.toPasswordIdentifier(op
+			return BCAlgorithmSuggestionProvider.toAlgorithmID(op
 					.getParameterAsString(PARAMETER_ALGORITHM));
 		}
 	}
@@ -119,7 +122,7 @@ public class PBEAlgorithmParameterHandler {
 		ParameterTypeSuggestion suggestion = new ParameterTypeSuggestion(
 				PARAMETER_ALGORITHM,
 				"The algorithm used to encrypt/decrypt the file.",
-				PBEAlgorithmSuggestionProvider.INSTANCE,
+				BCAlgorithmSuggestionProvider.INSTANCE,
 				DEFAULT_USER_ALGORITHM_NAME, true);
 		suggestion.registerDependencyCondition(new EqualTypeCondition(op,
 				PARAMETER_ALGORITHM_STRENGTH, ALGORITHM_STRENGTHS, true,

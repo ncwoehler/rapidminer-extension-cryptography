@@ -25,7 +25,7 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.UserError;
 
 /**
- * Decrypts files.
+ * Operator for decrypting files.
  * 
  * @author Nils Woehler
  * 
@@ -42,8 +42,7 @@ public class PBFileDecryptionOperator extends AbstractPBFileEncryptionOperator {
 		try {
 			return encryptor.decrypt(fileContent);
 		} catch (EncryptionOperationNotPossibleException e) {
-			throw new UserError(this, "file_decryption_failed"); 
-			//TODO add error message asken the user to check password and algorithm
+			throw new UserError(this, "file.decryption_failed");
 		}
 	}
 

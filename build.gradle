@@ -1,6 +1,5 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply from: file('dependencies.gradle')
 apply from: file('quality.gradle')
 
 defaultTasks = ['Install']
@@ -40,6 +39,8 @@ dependencies {
 	provided fileTree(dir: rapidminerHome + '/lib', include: '*.jar')
 }
 
+apply from: file('dependencies.gradle')
+
 jar {
 	// adds runtime dependencies to jar package
 	dependsOn configurations.runtime
@@ -52,10 +53,10 @@ jar {
 	manifest {
 		attributes("Manifest-Version": 		"1.0",
 		"Implementation-Vendor": 	vendor,
-		"Implementation-Title":		name,
+		"Implementation-Title":		extensionName,
 		"Implementation-URL":		homepage,
 		"Implementation-Version": 	version,
-		"Specification-Title": 		name,
+		"Specification-Title": 		extensionName,
 		"Specification-Version":	version,
 		"RapidMiner-Version":		minRMVersion,
 		"RapidMiner-Type":			"RapidMiner_Extension",

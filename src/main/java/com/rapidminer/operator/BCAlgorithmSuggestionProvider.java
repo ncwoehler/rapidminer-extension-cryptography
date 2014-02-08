@@ -27,24 +27,30 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKeyFactory;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
 import com.rapidminer.gui.tools.ResourceAction;
 import com.rapidminer.parameter.SuggestionProvider;
 import com.rapidminer.tools.ProgressListener;
 
-
 /**
+ * The {@link SuggestionProvider} used for the 'user_defined' algorithm
+ * selection from algorithms from the BouncyCastle provider. To compute the
+ * available algorithms each service starting with 'PBE' is tested for validity.
  * 
  * @author Nils Woehler
- *
+ * 
  */
-public enum PBEAlgorithmSuggestionProvider implements SuggestionProvider {
+public enum BCAlgorithmSuggestionProvider implements SuggestionProvider {
 
 	INSTANCE;
+	
+	/**
+	 * Used to test if encryption works with the current parameters.
+	 */
+	private static final byte[] RANDOM_BYTES = new byte[] { 81, 79, 11, 28, 64,
+			42, 41 };
 
 	private static final String PBE = "PBE";
 	private List<Object> algorithms = null;
@@ -54,6 +60,11 @@ public enum PBEAlgorithmSuggestionProvider implements SuggestionProvider {
 			ProgressListener arg1) {
 		if (algorithms == null) {
 			algorithms = getSupportedAlgorithms();
+		}
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// ignore
 		}
 		return algorithms;
 	}
@@ -70,8 +81,11 @@ public enum PBEAlgorithmSuggestionProvider implements SuggestionProvider {
 			// encryption) and work for Cipher and KeyGenerator..
 			if (service.getAlgorithm().startsWith(PBE)) {
 				try {
-					Cipher.getInstance(service.getAlgorithm(), provider);
-					SecretKeyFactory.getInstance(service.getAlgorithm(), provider);
+					StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
+					encryptor.setProvider(provider);
+					encryptor.setPassword("asdfghjkl");
+					encryptor.setAlgorithm(service.getAlgorithm());
+					encryptor.decrypt(encryptor.encrypt(RANDOM_BYTES));
 
 					// only add algorithms with cipher and secret key
 					// factories
@@ -79,6 +93,7 @@ public enum PBEAlgorithmSuggestionProvider implements SuggestionProvider {
 							.add(toHumandReadable(service.getAlgorithm()));
 				} catch (Throwable t) {
 					// do nothing
+					t.printStackTrace();
 				}
 			}
 		}
@@ -93,11 +108,19 @@ public enum PBEAlgorithmSuggestionProvider implements SuggestionProvider {
 		return null;
 	}
 
+	/**
+	 * Converts the algorithm ID into human readable by removing the leading
+	 * 'PBEWITH' and replacing AND by ' and '.
+	 */
 	public static final String toHumandReadable(String algorithmName) {
 		return algorithmName.substring(7).replaceFirst("AND", " and ");
 	}
 
-	public static final String toPasswordIdentifier(String humandReadable) {
+	/**
+	 * Converts a human readable algorithm back to the algorithm ID format that
+	 * is being used to select algorithms from the BouncyCastle provider.
+	 */
+	public static final String toAlgorithmID(String humandReadable) {
 		return "PBEWITH" + humandReadable.replaceFirst(" and ", "AND");
 	}
 
