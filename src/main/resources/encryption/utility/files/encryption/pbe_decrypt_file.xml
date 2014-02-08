@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../../../rapidminerreferencemanual/documentation2html.xsl"?>
+<p1:documents xmlns:p1="http://rapid-i.com/schemas/documentation/reference/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://rapid-i.com/schemas/documentation/reference/1.0/documentation.xsd">
+	<!-- LAST CORRECTIONS: 22/JAN/2014 -->
+	<operator key="operator.encryption:pbe_encrypt_file" locale="en"
+		version="1.0.000">
+		<title>Encrypt File (Password)</title>
+		<synopsis>Operator for decrypting password protected files.</synopsis>
+		<text>
+			<paragraph>This operator expects an password encrypted file as input
+				which is then decrypted with the provided password.
+			</paragraph>
+		</text>
+		<inputPorts>
+			<port name="file" type="com.rapidminer.operator.nio.file.FileObject">
+				The file object which should be
+				decrypted. If a file object is connected to this port, the parameter
+				'file input' is being ignored.
+			</port>
+		</inputPorts>
+		<outputPorts>
+			<port name="file" type="com.rapidminer.operator.nio.file.FileObject">
+				The decrypted input file object is
+				returned here. If the file output port is
+				connected, the parameter
+				'file output' is being ignored.
+			</port>
+		</outputPorts>
+
+		<!-- description of the parameters and the corresponding values -->
+		<parameters>
+			<parameter key="file_input" type="file">
+				Defines the file that
+				should be decrypted.
+				If a file object is
+				connected to the input port
+				of the
+				operator, this parameter is being ignored.
+			</parameter>
+			<parameter key="password" type="password">
+				The password that should be
+				used for file decryption.
+			</parameter>
+			<parameter key="algorithm_strength" type="selection"
+				default="medium">
+				This parameter allows you to select the attribute selection filter;
+				the method you want to use for selecting attributes. It has the
+				following options:
+				<values>
+					<value value="all">This option simply selects all the attributes of
+						the ExampleSet, no attributes are removed. This is the default
+						option.
+					</value>
+					<value value="single">This option allows the selection of a single
+						attribute. When this option is selected another parameter
+						(attribute) becomes visible in the Parameter View.
+					</value>
+					<value value="subset">This option allows the selection of multiple
+						attributes through a list. All attributes of ExampleSet are
+						present in the list; required attributes can be easily selected.
+						This option will not work if the meta data is not known. When this
+						option is selected another parameter becomes visible in the
+						Parameter View.
+					</value>
+					<value value="regular_expression">This option allows you to specify a regular
+						expression for the attribute selection. When this option is
+						selected some other parameters (regular expression, use except
+						expression) become visible in the Parameter View.
+					</value>
+					<value value="value_type">
+						This option allows selection of all the attributes of a particular
+						type. It should be noted that types are hierarchical. For example
+						<em>real</em>
+						and
+						<em>integer</em>
+						types both belong to the
+						<em>numeric</em>
+						type. The user should have a basic understanding of type hierarchy
+						when selecting attributes through this option. When this option is
+						selected some other parameters (value type, use value type
+						exception) become visible in the Parameter View.
+					</value>
+					<value value="block_type">
+						This option is similar in working to the
+						<em>value_type</em>
+						option. This option allows the selection of all the attributes of
+						a particular block type. It should be noted that block types may
+						be hierarchical. For example
+						<em>value_series_start</em>
+						and
+						<em>value_series_end</em>
+						block types both belong to the
+						<em>value_series</em>
+						block type. When this option is selected some other parameters
+						(block type, use block type exception) become visible in the
+						Parameter View.
+					</value>
+					<value value="no_missing_values">This option simply selects all the attributes of
+						the ExampleSet which don&apos;t contain a missing value in any
+						example. Attributes that have even a single missing value are
+						removed.
+					</value>
+					<value value="numeric_value_filter">When this option is selected another parameter
+						(numeric condition) becomes visible in the Parameter View. All
+						numeric attributes whose examples all satisfy the mentioned
+						numeric condition are selected. Please note that all nominal
+						attributes are also selected irrespective of the given numerical
+						condition.
+					</value>
+				</values>
+			</parameter>
+			<parameter key="file_output" type="file">
+				Defines where the
+				decrypted input file should be stored. If the file output
+				port is
+				connected, the parameter
+				'file output' is being ignored.
+			</parameter>
+			<parameter key="override" type="file">
+				The operator does not
+				override already existing files by default. If checked an already
+				existing file will be overriden without an error.
+			</parameter>
+		</parameters>
+
+		<relatedDocuments>
+			<!-- ... -->
+		</relatedDocuments>
+
+		<tutorialProcesses>
+			<tutorialProcess
+				key="process.select_attributes.select_by_regular_expression"
+				title="Selecting attributes by specifying regular expressions matching their names">
+				<description>
+					<paragraph>
+						In the given Example process the Labor-Negotiations ExampleSet is
+						loaded using the Retrieve operator. Then Select Attribute operator
+						is applied on it. Have a look at the Parameter View of the Select
+						Attributes operator. Here is a stepwise explanation of this
+						process.
+						<ul>
+							<li>
+								See that at the bottom of Parameters View the
+								<em>include special attributes</em>
+								parameter is set to true. This means that all special attributes
+								will also be checked against all the given conditions, they will
+								appear in the output only if they pass all the conditions. The
+								only special attribute is the &apos;class&apos; attribute in
+								this ExampleSet. Though &apos;class&apos; is a special
+								attribute; it will make to the output port only if it passes the
+								conditions because the
+								<em>include special attributes</em>
+								parameter is set to true.
+							</li>
+							<li>
+								The regular expression specified is = w.*|.*y.*
+								<ul>
+									<li>w.* means all attribute names with starting alphabet
+										&apos;w&apos;.</li>
+									<li>
+										<em>wage-inc-1st, wage-inc-2nd, wage-inc-3rd, working-hours</em>
+										satisfy this condition
+									</li>
+									<li>.*y.* means all attributes that have a &apos;y&apos; in
+										their name.</li>
+									<li>
+										<em>standby-pay, statutory-holidays,
+											longterm-disability-assistance</em>
+										satisfy this condition.
+									</li>
+									<li>|| means logical OR operator. So if any attribute whose
+										name starts with &apos;w&apos; or its name contains a
+										&apos;y&apos;, it satisfies this expression and is selected.</li>
+									<li>
+										Following attributes of the Labor-Negotiations data set
+										satisfy this expression:
+										<em>wage-inc-1st, wage-inc-2nd, wage-inc-3rd, working-hours,
+											standby-pay, statutory-holidays,
+											longterm-disability-assistance</em>
+										.
+									</li>
+								</ul>
+							</li>
+							<li>
+								The
+								<em>use except expression</em>
+								parameter is also set to true which means attributes that
+								satisfy the condition in the
+								<em>except regular expression</em>
+								parameter would be removed.
+								<ul>
+									<li>
+										The regular expression for
+										<em>except regular expression</em>
+										is = .*[0-9].*
+									</li>
+									<li>This expression means any attribute whose name contains a
+										digit.</li>
+									<li>
+										Three attributes satisfy this condition:
+										<em>wage-inc-1st, wage-inc-2nd, wage-inc-3rd</em>
+										. Thus these three attributes do not make it to the output
+										port even though they satisfied the regular expression of the
+										<em>regular expression</em>
+										parameter.
+									</li>
+								</ul>
+							</li>
+							<li>
+								Finally we are left with the following four attributes:
+								<em>working-hours, standby-pay, statutory-holidays,
+									longterm-disability-assistance</em>
+								. These four attributes make it to the output port.
+							</li>
+							<li>
+								Notice that the
+								<em>invert selection</em>
+								parameter was not set to true. If it was set to true, all
+								attributes other than these four attributes would have made it
+								to the output port.
+							</li>
+						</ul>
+					</paragraph>
+					<!-- tutorialProcess description: What is done and shown here? You can 
+						use formated text here -->
+				</description>
+				<!-- Copy process from RapidMiner's XML view to here -->
+			</tutorialProcess>
+		</tutorialProcesses>
+	</operator>
+</p1:documents>
