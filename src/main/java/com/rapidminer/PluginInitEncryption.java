@@ -1,11 +1,7 @@
 /*
- *  RapidMiner
+ *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2001-2013 by Rapid-I and the contributors
- *
- *  Complete list of developers available at our web site:
- *
- *       http://rapid-i.com
+ *  Copyright (C) 2014 by Nils Wöhler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -40,7 +36,7 @@ import com.rapidminer.tools.Tools;
  * 
  * @author Sebastian Land
  */
-public class PluginInitFileEncryption {
+public class PluginInitEncryption {
 
 	public static final String BC_JAR_NAME = "bcprov-jdk15on-150.jar";
 
@@ -63,7 +59,7 @@ public class PluginInitFileEncryption {
 
 			// register bouncy castle provider to plugin classloader
 			registerBCProviderJar(bcprovider,
-					(URLClassLoader) PluginInitFileEncryption.class
+					(URLClassLoader) PluginInitEncryption.class
 							.getClassLoader());
 		} catch (IOException | RepositoryException e) {
 			throw new RuntimeException("Error loading BC provider jar.", e);
@@ -71,7 +67,7 @@ public class PluginInitFileEncryption {
 	}
 
 	/**
-	 * Register BC provider jar to specified classloader.
+	 * Register specified .jar to provided class loader.
 	 */
 	private static void registerBCProviderJar(File jarFile,
 			URLClassLoader classLoader) throws IOException {
@@ -85,9 +81,12 @@ public class PluginInitFileEncryption {
 			t.printStackTrace();
 			throw new IOException(
 					"Error, could not add URL to system classloader");
-		}// end try catch
+		}
 	}
 
+	/**
+	 * Stores BouncyCastle provider jar from resources to disk.
+	 */
 	private static void storeBCProviderToDisk(File outputFile)
 			throws IOException, RepositoryException {
 		InputStream bcInput = Tools.getResourceInputStream("providers/"

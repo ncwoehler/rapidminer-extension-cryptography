@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <operators name="template" version="5.0"
-	docbundle="com/rapidminer/resources/i18n/OperatorsDocFileEncryption">
+	docbundle="com/rapidminer/resources/i18n/OperatorsDocEncryption">
 	<group key="">
 		<group key="utility">
 			<group key="encryption">
