@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<operators name="template" version="5.0"
+	docbundle="com/rapidminer/resources/i18n/OperatorsDocCryptography">
+	<group key="">
+		<group key="utility">
+			<group key="files">
+				<group key="cryptography">
+					<operator>
+						<icon>lock-icon.png</icon>
+						<key>pbe_encrypt_file</key>
+						<class>com.rapidminer.operator.nio.file.PBFileEncryptionOperator
+						</class>
+					</operator>
+					<operator>
+						<icon>Lock-Unlock-icon.png</icon>
+						<key>pbe_decrypt_file</key>
+						<class>com.rapidminer.operator.nio.file.PBFileDecryptionOperator
+						</class>
+					</operator>
+				</group>
+			</group>
+		</group>
+		<group key="text_processing">
+			<group key="cryptography">
+				<operator>
+					<icon>lock-icon.png</icon>
+					<key>pbe_encrypt_document</key>
+					<class>com.rapidminer.operator.text.PBDocumentEncryptionOperator
+					</class>
+				</operator>
+				<operator>
+					<icon>Lock-Unlock-icon.png</icon>
+					<key>pbe_decrypt_document</key>
+					<class>com.rapidminer.operator.text.PBDocumentDecryptionOperator
+					</class>
+				</operator>
+			</group>
+		</group>
+	</group>
+</operators>

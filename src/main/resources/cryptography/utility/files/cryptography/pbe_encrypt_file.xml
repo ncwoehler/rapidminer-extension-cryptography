@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="../../../../../rapidminerreferencemanual/documentation2html.xsl"?>
+<p1:documents xmlns:p1="http://rapid-i.com/schemas/documentation/reference/1.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://rapid-i.com/schemas/documentation/reference/1.0/documentation.xsd">
+	<!-- LAST CORRECTIONS: 22/JAN/2014 -->
+	<operator key="operator.encryption:pbe_encrypt_file" locale="en"
+		version="1.0.000">
+		<title>Encrypt File (Password)</title>
+		<synopsis>Operator for password-based file encryption.</synopsis>
+		<text>
+			<paragraph>The operator can be used to encrypt a file with a
+				password-based algorithm.
+			</paragraph>
+		</text>
+		<inputPorts>
+			<port name="file_input" type="com.rapidminer.operator.nio.file.FileObject">
+				The file object which should be
+				encrypted. If a file object is connected to the port, the parameter
+				'file input' is being ignored.
+			</port>
+		</inputPorts>
+		<outputPorts>
+			<port name="file_output" type="com.rapidminer.operator.nio.file.FileObject">
+				The encrypted input file is
+				outputted
+				here. If the port is
+				connected, the parameter
+				'file output'
+				is being
+				ignored.
+			</port>
+		</outputPorts>
+
+		<!-- description of the parameters and the corresponding values -->
+		<parameters>
+			<parameter key="file_input" type="file">
+				Defines the file that
+				should be encrypted.
+				If a file object is
+				connected to the input port
+				of the
+				operator, the parameter is being ignored.
+			</parameter>
+			<parameter key="password" type="password">
+				The password that should be
+				used for file encryption.
+			</parameter>
+			<parameter key="algorithm_strength" type="selection"
+				default="medium">
+				This parameter allows to select the strength of the algorithm used
+				to encrypt the file.
+				<values>
+					<value value="weak">This option selects the algorithm 'SHA1' to
+						digest the password and 'RC2' to encrypt the file with the
+						digested password.
+					</value>
+					<value value="medium">This option selects the algorithm 'MD5' to
+						digest the password and '256BITAES-CBC-OPENSSL' to encrypt the
+						file with the
+						digested password. The 256 bit AES encryption is a
+						very secure algorithm but its secureness strongly depends on the
+						password
+						strength. Therefore it is recommended to use a password
+						with
+						at
+						least 20 characters.
+					</value>
+					<value value="strong">
+						This option selects the algorithm 'SHA256' to
+						digest the password
+						and '256BITAES-CBC-BC' to encrypt the file
+						with the
+						digested
+						password. The 256 bit AES encryption is a
+						very secure algorithm but
+						its secureness strongly depends on the
+						password
+						strength. Therefore
+						it is recommended to use a password
+						with
+						at
+						least 20 characters.
+						<b>CAUTION:</b>
+						This option will not work if the JCE unlimited strength
+						jurisdiction
+						policy files have not been installed for the Java VM
+						running RapidMiner.
+					</value>
+					<value value="user_defined">This option allows you to directly select the
+						algorithm that should be used to encrypt the file. Only algorithms
+						working on the current setup are being shown.
+						In case the JCE
+						unlimited strength
+						jurisdiction
+						policy files have been installed,
+						more algorithms will show up which might not work on other
+						machines without the JCE policy files installed.
+					</value>
+				</values>
+			</parameter>
+			<parameter key="base64" type="boolean">
+				If checked the result will be
+				Base64 encoded. This is especially helpful if it should be sent via
+				mail. Do not forget to also check 'base64' when decoding the file.
+			</parameter>
+			<parameter key="file_output" type="file">
+				Defines where the
+				encrypted input file should be stored. If the file output
+				port is
+				connected, the parameter
+				'file output' is being ignored.
+			</parameter>
+			<parameter key="override" type="boolean">
+				The operator does not
+				override already existing files by default. If checked an already
+				existing file will be overriden without an error.
+			</parameter>
+		</parameters>
+
+		<relatedDocuments>
+			<!-- ... -->
+		</relatedDocuments>
+	</operator>
+</p1:documents>
