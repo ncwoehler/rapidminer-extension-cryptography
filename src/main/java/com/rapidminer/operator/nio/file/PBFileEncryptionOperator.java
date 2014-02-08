@@ -19,11 +19,13 @@
 package com.rapidminer.operator.nio.file;
 
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import com.rapidminer.operator.OperatorDescription;
+import com.rapidminer.operator.UserError;
 
 /**
- * Encrypts files.
+ * Operator for encrypting files.
  * 
  * @author Nils Woehler
  * 
@@ -36,8 +38,12 @@ public class PBFileEncryptionOperator extends AbstractPBFileEncryptionOperator {
 
 	@Override
 	protected byte[] transformFile(StandardPBEByteEncryptor encryptor,
-			byte[] fileContent) {
-		return encryptor.encrypt(fileContent);
+			byte[] fileContent) throws UserError {
+		try {
+			return encryptor.encrypt(fileContent);
+		} catch(EncryptionOperationNotPossibleException e){
+			throw new UserError(this, e, "file.encryption_not_possible");
+		}
 	}
 
 }

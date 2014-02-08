@@ -32,7 +32,7 @@ import com.rapidminer.tools.FileSystemService;
 import com.rapidminer.tools.Tools;
 
 /**
- * This class provides hooks for initialization
+ * This class provides hooks for initialization.
  * 
  * @author Sebastian Land
  */
@@ -47,8 +47,8 @@ public class PluginInitEncryption {
 	 */
 	public static void initPlugin() {
 		try {
-			File rapidMinerHome = FileSystemService.getUserRapidMinerDir();
-			File encryptionDir = new File(rapidMinerHome, "encryption-provider");
+			File rapidMinerUserFolder = FileSystemService.getUserRapidMinerDir();
+			File encryptionDir = new File(rapidMinerUserFolder, "encryption-provider");
 			if (!encryptionDir.exists()) {
 				encryptionDir.mkdir();
 			}

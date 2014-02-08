@@ -18,7 +18,6 @@
  */
 package com.rapidminer.operator.text;
 
-import java.security.Security;
 import java.util.List;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -26,7 +25,7 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.PBEAlgorithmParameterHandler;
+import com.rapidminer.operator.PBEEncryptorConfigurator;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
@@ -37,9 +36,9 @@ import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.UndefinedParameterError;
 
 /**
- * This operator takes a document as input and encrypts it to according the
- * specified algorithm and password. Password based algorithms are taken from
- * providers registered to {@link Security}.
+ * The abstract super class for all PBE document encryption/decryption operators.
+ * The operator has a document input and a document output. Furthermore the user is able
+ * to select the algorithm strength and password.
  * 
  * @author Nils Woehler
  * 
@@ -54,7 +53,7 @@ public abstract class AbstractPBDocumentEncryptionOperator extends Operator {
 	 */
 	private static final String RANDOM_TEXT = "This is sparta!";
 
-	private static final PBEAlgorithmParameterHandler ALGORITHM_PROVIDER = new PBEAlgorithmParameterHandler();
+	private static final PBEEncryptorConfigurator ALGORITHM_PROVIDER = new PBEEncryptorConfigurator();
 
 	private final InputPort documentInput = getInputPorts().createPort(
 			DOCUMENT_INPUT, Document.class);

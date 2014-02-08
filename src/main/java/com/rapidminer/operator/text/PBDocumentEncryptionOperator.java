@@ -19,17 +19,19 @@
 package com.rapidminer.operator.text;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.UserError;
 
 /**
- * Encrypts files.
+ * An operator for encrypting documents.
  * 
  * @author Nils Woehler
  * 
  */
-public class PBDocumentEncryptionOperator extends AbstractPBDocumentEncryptionOperator {
+public class PBDocumentEncryptionOperator extends
+		AbstractPBDocumentEncryptionOperator {
 
 	public PBDocumentEncryptionOperator(OperatorDescription description) {
 		super(description);
@@ -38,7 +40,11 @@ public class PBDocumentEncryptionOperator extends AbstractPBDocumentEncryptionOp
 	@Override
 	protected String transformText(StandardPBEStringEncryptor encryptor,
 			String text) throws UserError {
-		return encryptor.encrypt(text);
+		try {
+			return encryptor.encrypt(text);
+		} catch (EncryptionOperationNotPossibleException e) {
+			throw new UserError(this, e, "text.encryption_not_possible");
+		}
 	}
 
 }
