@@ -78,7 +78,7 @@ jar {
 }
 
 gradle.taskGraph.whenReady {taskGraph ->
-	if (!taskGraph.hasTask('release')) {
+	if (!taskGraph.hasTask(':release')) {
 		version = major + "." + minor + "." + patch + "-SNAPSHOT"
 	}
 }
@@ -87,4 +87,8 @@ gradle.taskGraph.whenReady {taskGraph ->
 task install(type: Copy, dependsOn: jar) {
 	from jar
 	into rapidminerHome + "/lib/plugins"
+}
+
+task release(dependsOn: jar) << {
+	print "Created release for version: " + version
 }
