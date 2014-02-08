@@ -1,7 +1,7 @@
 /*
  *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2014 by Nils Wöhler
+ *  Copyright (C) 2014 by Nils Woehler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -93,7 +93,6 @@ public enum BCAlgorithmSuggestionProvider implements SuggestionProvider {
 							.add(toHumandReadable(service.getAlgorithm()));
 				} catch (Throwable t) {
 					// do nothing
-					t.printStackTrace();
 				}
 			}
 		}

@@ -23,7 +23,7 @@
 	</operator>
 
 	<group>
-		<key>encryption</key>
-		<name>Encryption</name>
+		<key>cryptography</key>
+		<name>Cryptography</name>
 	</group>
 </operatorHelp>

@@ -1,7 +1,7 @@
 /*
  *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2014 by Nils Wöhler
+ *  Copyright (C) 2014 by Nils Woehler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ import com.rapidminer.operator.UserError;
  * 
  */
 public class PBDocumentEncryptionOperator extends
-		AbstractPBDocumentEncryptionOperator {
+		AbstractPBDocumentCryptographyOperator {
 
 	public PBDocumentEncryptionOperator(OperatorDescription description) {
 		super(description);

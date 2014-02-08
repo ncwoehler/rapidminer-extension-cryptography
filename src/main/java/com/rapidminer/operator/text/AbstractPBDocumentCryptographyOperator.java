@@ -1,7 +1,7 @@
 /*
  *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2014 by Nils Wöhler
+ *  Copyright (C) 2014 by Nils Woehler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -25,7 +25,7 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.PBEEncryptorConfigurator;
+import com.rapidminer.operator.PBCryptographyConfigurator;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
@@ -43,7 +43,7 @@ import com.rapidminer.parameter.UndefinedParameterError;
  * @author Nils Woehler
  * 
  */
-public abstract class AbstractPBDocumentEncryptionOperator extends Operator {
+public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 
 	public static final String DOCUMENT_INPUT = "document_input";
 	public static final String DOCUMENT_OUTPUT = "document_output";
@@ -53,14 +53,14 @@ public abstract class AbstractPBDocumentEncryptionOperator extends Operator {
 	 */
 	private static final String RANDOM_TEXT = "This is sparta!";
 
-	private static final PBEEncryptorConfigurator ALGORITHM_PROVIDER = new PBEEncryptorConfigurator();
+	private static final PBCryptographyConfigurator ALGORITHM_PROVIDER = new PBCryptographyConfigurator();
 
 	private final InputPort documentInput = getInputPorts().createPort(
 			DOCUMENT_INPUT, Document.class);
 	private final OutputPort documentOut = getOutputPorts().createPort(
 			DOCUMENT_OUTPUT);
 
-	public AbstractPBDocumentEncryptionOperator(OperatorDescription description) {
+	public AbstractPBDocumentCryptographyOperator(OperatorDescription description) {
 		super(description);
 
 		getTransformer().addRule(new MDTransformationRule() {
@@ -72,7 +72,7 @@ public abstract class AbstractPBDocumentEncryptionOperator extends Operator {
 					encryptor.decrypt(encryptor.encrypt(RANDOM_TEXT));
 				} catch (Throwable t) {
 					addError(new SimpleProcessSetupError(Severity.ERROR,
-							getPortOwner(), "text_encryption_error", t
+							getPortOwner(), "text.encryption_error", t
 									.getLocalizedMessage()));
 				}
 			}

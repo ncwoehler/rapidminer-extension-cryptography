@@ -1,7 +1,7 @@
 /*
  *  RapidMiner Encryption Extension
  *
- *  Copyright (C) 2014 by Nils Wöhler
+ *  Copyright (C) 2014 by Nils Woehler
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -30,7 +30,7 @@ import com.rapidminer.operator.UserError;
  * @author Nils Woehler
  * 
  */
-public class PBFileDecryptionOperator extends AbstractPBFileEncryptionOperator {
+public class PBFileDecryptionOperator extends AbstractPBFileCryptographyOperator {
 
 	public PBFileDecryptionOperator(OperatorDescription description) {
 		super(description);
@@ -42,8 +42,13 @@ public class PBFileDecryptionOperator extends AbstractPBFileEncryptionOperator {
 		try {
 			return encryptor.decrypt(fileContent);
 		} catch (EncryptionOperationNotPossibleException e) {
-			throw new UserError(this, "file.decryption_failed");
+			throw new UserError(this, e, "file.decryption_failed");
 		}
+	}
+
+	@Override
+	protected boolean isEncrypting() {
+		return false;
 	}
 
 }
