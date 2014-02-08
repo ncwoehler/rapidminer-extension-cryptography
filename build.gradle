@@ -1,11 +1,13 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply from: file('dependencies.gradle')
+apply from: file('quality.gradle')
 
 defaultTasks = ['Install']
 
 ext {
 	updateServerId = "rmx_" + namespace
-	rapidminerHome = "../rapidminer-original"
+	rapidminerHome = "../rapidminer"
 }
 
 sourceCompatibility = 1.7
@@ -85,6 +87,3 @@ task install(type: Copy, dependsOn: jar) {
 	from jar
 	into rapidminerHome + "/lib/plugins"
 }
-
-apply from: file('dependencies.gradle')
-
