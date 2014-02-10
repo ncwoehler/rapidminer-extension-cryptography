@@ -28,14 +28,13 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypePassword;
-import com.rapidminer.parameter.ParameterTypeSuggestion;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.parameter.conditions.EqualTypeCondition;
 
 /**
- * This class is used for providing parameters used for password based encryption/decryption algorithms
- * like passwords, algorithm, etc.
- * These parameters are then being used to configure a Byte or String encryptor.
+ * This class is used for providing parameters used for password based
+ * encryption/decryption algorithms like passwords, algorithm, etc. These
+ * parameters are then being used to configure a Byte or String encryptor.
  * 
  * @author Nils Woehler
  * 
@@ -119,11 +118,14 @@ public class PBCryptographyConfigurator {
 				"Defines the algorithm strength used for  encryption/decryption.",
 				ALGORITHM_STRENGTHS, 1, false));
 
-		ParameterTypeSuggestion suggestion = new ParameterTypeSuggestion(
+		List<Object> suggestions = BCAlgorithmSuggestionProvider.INSTANCE
+				.getSuggestions(null, null);
+
+		ParameterTypeCategory suggestion = new ParameterTypeCategory(
 				PARAMETER_ALGORITHM,
 				"The algorithm used to encrypt/decrypt the file.",
-				BCAlgorithmSuggestionProvider.INSTANCE,
-				DEFAULT_USER_ALGORITHM_NAME, true);
+				suggestions.toArray(new String[suggestions.size()]),
+				suggestions.indexOf(DEFAULT_USER_ALGORITHM_NAME));
 		suggestion.registerDependencyCondition(new EqualTypeCondition(op,
 				PARAMETER_ALGORITHM_STRENGTH, ALGORITHM_STRENGTHS, true,
 				USER_DEFINED_ALGORITHM_INDEX));
