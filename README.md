@@ -1,16 +1,16 @@
 ![Extension icon](src/main/resources/META-INF/icon.png) RapidMiner Cryptography Extension
 ===============================
 
-A RapidMiner extension that adds operators for password-based file and document encryption and decryption. It uses strong cryptography algorithms provided by the Bouncy Castle Crypto APIs (https://www.bouncycastle.org/).
+With its operators for password-based file and document encryption and decryption this extension unleashes the full power of cryptography directly from within RapidMiner! It uses strong cryptography algorithms like e.g. AES256 provided by the Bouncy Castle Crypto APIs (https://www.bouncycastle.org/) to secure file and document content.
 
-In particular it adds four new operators:
+In particular it adds these four new operators:
 
  - Encrypt File (Password)
  - Decrypt File (Password)
  - Encrypt Document (Password)
  - Decrypt Document (Password)
 
-![example process](screenshots/example_process.png)
+![example process](screenshots/example_process.png?raw=true)
 
 ## Unlimited Strength Jurisdiction Policy Files
 For using strong algorithm strength the Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files have to be installed for the Java VM RapidMiner is started with. The files can be downloaded from here: http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html
