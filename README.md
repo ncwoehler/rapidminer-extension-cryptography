@@ -1,4 +1,4 @@
-RapidMiner Cryptography Extension
+![Extension icon](src/main/resources/META-INF/icon.png) RapidMiner Cryptography Extension
 ===============================
 
 A RapidMiner extension that adds operators for password-based file encryption and decryption and document encryption and decryption. It uses strong cryptography algorithms provided by the Bouncy Castle Crypto APIs (https://www.bouncycastle.org/).
