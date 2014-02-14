@@ -27,9 +27,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
+import com.rapidminer.BCProvider;
 import com.rapidminer.gui.tools.ResourceAction;
 import com.rapidminer.parameter.SuggestionProvider;
 import com.rapidminer.tools.ProgressListener;
@@ -75,7 +75,7 @@ public enum BCAlgorithmSuggestionProvider implements SuggestionProvider {
 	 */
 	private static List<Object> getSupportedAlgorithms() {
 		Set<String> algorithmNames = new HashSet<>();
-		Provider provider = new BouncyCastleProvider();
+		Provider provider = BCProvider.INSTANCE.get();
 		for (Service service : provider.getServices()) {
 			// only add algorithms that start with PBE (password based
 			// encryption) and work for Cipher and KeyGenerator..

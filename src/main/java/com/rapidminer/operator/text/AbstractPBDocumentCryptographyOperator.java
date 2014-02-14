@@ -20,6 +20,7 @@ package com.rapidminer.operator.text;
 
 import java.util.List;
 
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
 import com.rapidminer.operator.Operator;
@@ -68,7 +69,7 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 			@Override
 			public void transformMD() {
 				try {
-					StandardPBEStringEncryptor encryptor = configureEncryptor();
+					PBEStringEncryptor encryptor = configureEncryptor();
 					encryptor.decrypt(encryptor.encrypt(RANDOM_TEXT));
 				} catch (Throwable t) {
 					addError(new SimpleProcessSetupError(Severity.ERROR,
@@ -97,7 +98,7 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 	/**
 	 * Creates and configures a string encryptor.
 	 */
-	protected StandardPBEStringEncryptor configureEncryptor()
+	protected PBEStringEncryptor configureEncryptor()
 			throws UndefinedParameterError {
 		return ALGORITHM_PROVIDER.configureStringEncryptor(this);
 	}
@@ -113,7 +114,7 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 	 * @return the encrypted/decrypted content
 	 */
 	protected abstract String transformText(
-			StandardPBEStringEncryptor encryptor, String text) throws UserError;
+			PBEStringEncryptor encryptor, String text) throws UserError;
 
 	@Override
 	public List<ParameterType> getParameterTypes() {

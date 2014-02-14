@@ -61,6 +61,9 @@ public class PluginInitCryptography {
 			registerBCProviderJar(bcprovider,
 					(URLClassLoader) PluginInitCryptography.class
 							.getClassLoader());
+			
+			// initialize the BCProvider enum
+			BCProvider.INSTANCE.get();
 		} catch (IOException | RepositoryException e) {
 			throw new RuntimeException("Error loading BC provider jar.", e);
 		}

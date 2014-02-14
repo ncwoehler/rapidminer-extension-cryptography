@@ -18,7 +18,7 @@
  */
 package com.rapidminer.operator.text;
 
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import com.rapidminer.operator.OperatorDescription;
@@ -37,7 +37,7 @@ public class PBDocumentDecryptionOperator extends AbstractPBDocumentCryptography
 	}
 
 	@Override
-	protected String transformText(StandardPBEStringEncryptor encryptor,
+	protected String transformText(PBEStringEncryptor encryptor,
 			String text) throws UserError {
 		try {
 			return encryptor.decrypt(text);
