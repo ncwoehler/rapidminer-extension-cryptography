@@ -21,10 +21,12 @@ package com.rapidminer.operator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.encryption.pbe.PBEByteEncryptor;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEByteEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 
+import com.rapidminer.BCProvider;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypePassword;
@@ -61,28 +63,28 @@ public class PBCryptographyConfigurator {
 
 	// presented user defined algorithm in user friendly fashion
 	public static final String DEFAULT_USER_ALGORITHM_NAME = "MD5 and 256BITAES-CBC-OPENSSL";
-
+	
 	/**
 	 * Creates a byte encryptor according to the specified parameters.
 	 */
-	public StandardPBEByteEncryptor configureByteEncryptor(Operator op)
+	public PBEByteEncryptor configureByteEncryptor(Operator op)
 			throws UndefinedParameterError {
-		StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
+		PooledPBEByteEncryptor encryptor = new PooledPBEByteEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
-		encryptor.setProvider(new BouncyCastleProvider());
+		encryptor.setProvider(BCProvider.INSTANCE.get());
 		return encryptor;
 	}
 
 	/**
 	 * Creates a string encryptor according to the specified parameters.
 	 */
-	public StandardPBEStringEncryptor configureStringEncryptor(Operator op)
+	public PBEStringEncryptor configureStringEncryptor(Operator op)
 			throws UndefinedParameterError {
-		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
-		encryptor.setProvider(new BouncyCastleProvider());
+		encryptor.setProvider(BCProvider.INSTANCE.get());
 		return encryptor;
 	}
 

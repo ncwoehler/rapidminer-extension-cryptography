@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.DecoderException;
+import org.jasypt.encryption.pbe.PBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
 import com.rapidminer.operator.Operator;
@@ -87,7 +88,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 			@Override
 			public void transformMD() {
 				try {
-					StandardPBEByteEncryptor encryptor = configureEncryptor();
+					PBEByteEncryptor encryptor = configureEncryptor();
 					encryptor.decrypt(encryptor.encrypt(RANDOM_BYTES));
 				} catch (Throwable t) {
 					addError(new SimpleProcessSetupError(Severity.ERROR,
@@ -148,7 +149,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 	/**
 	 * Creates and configures a byte encryptor.
 	 */
-	protected StandardPBEByteEncryptor configureEncryptor()
+	protected PBEByteEncryptor configureEncryptor()
 			throws UndefinedParameterError {
 		return ALGORITHM_PROVIDER.configureByteEncryptor(this);
 	}
@@ -163,7 +164,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 	 *            the content being encrypted/decrypted
 	 * @return the encrypted/decrypted content
 	 */
-	protected abstract byte[] transformFile(StandardPBEByteEncryptor encryptor,
+	protected abstract byte[] transformFile(PBEByteEncryptor encryptor,
 			byte[] fileContent) throws UserError;
 
 	/**
