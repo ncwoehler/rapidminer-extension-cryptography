@@ -73,7 +73,9 @@ public class HashFunction implements Function {
 			case 0:
 				throw new JEPFunctionException("No input defined");
 			case 1:
-				// only message as input
+				// only message as input, use default values
+				configureSaltSize(digester, 0, new Object[] {0});
+				configureNumberOfIterations(digester, 0, new Object[] {1});
 				break;
 			case 2:
 				// salt size defined
@@ -158,18 +160,19 @@ public class HashFunction implements Function {
 		return new FunctionDescription(
 				functionName,
 				functionName,
-				"<html><br/>Calculates the BASE64 encoded "
+				"<html><div style='width: 550px;'>Calculates the BASE64 encoded "
 						+ functionID
-						+ " hash value of the provided input.<b>If the number of salt bytes is not changed via the second parameter two hashes "
-						+ "<br/> created for the same input will always be different</b>. "
-						+ "To check whether two hashes are equal use 'match"
+						+ " hash value of the specified input. The default number of salt bytes is 0 and the default number of iterations is 1."
+						+ " The default values will return equal results for consecutive calls with the same input." 
+						+ "<br/><br/> Increasing the number of salt bytes (e.g. to 8) will return different results consecutive calls with the same input."
+						+ "To check whether two hashes created with at least one salt byte are equal use 'match_"
 						+ functionName
 						+ "'. "
 						+ "<ul>"
 						+ "<li>The first parameter defines the input for which the hash value should be calculated. </li>"
-						+ "<li>The second parameter is optional and defines the number of bytes that should be used as salt (Default: 8, Minimum: 1). If it is set to zero no salt will be used.</li>"
-						+ "<li>The third parameter is optional and defines the number of iterations (Minimum: 1).</li>"
-						+ "</ul><html>",
+						+ "<li>The second parameter is optional and defines the number of bytes that should be used as salt (Default: 0, Minimum: 0).</li>"
+						+ "<li>The third parameter is optional and defines the number of iterations (Default: 1, Minimum: 1).</li>"
+						+ "</ul></div><html>",
 				FunctionDescription.UNLIMITED_NUMBER_OF_ARGUMENTS);
 	}
 
