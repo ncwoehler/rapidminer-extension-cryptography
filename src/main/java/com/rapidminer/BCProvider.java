@@ -1,5 +1,5 @@
 /*
- *  RapidMiner Encryption Extension
+ *  RapidMiner Cryptography Extension
  *
  *  Copyright (C) 2014 by Nils Woehler
  *
@@ -21,7 +21,7 @@ package com.rapidminer;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
- * Enum for storing the BC provider.
+ * Enum for accessing the BC provider.
  * 
  * @author nwoehler
  *

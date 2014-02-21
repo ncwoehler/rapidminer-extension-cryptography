@@ -1,5 +1,5 @@
 /*
- *  RapidMiner Encryption Extension
+ *  RapidMiner Cryptography Extension
  *
  *  Copyright (C) 2014 by Nils Woehler
  *
