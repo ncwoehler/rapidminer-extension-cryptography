@@ -1,5 +1,5 @@
 dependencies {
-	compile 'org.jasypt:jasypt:1.9.1'
+	compile 'org.jasypt:jasypt:1.9.1:lite'
 	provided 'org.bouncycastle:bcprov-jdk15on:1.50'
 	provided files('lib/rapidminer-Text Processing-5.3.002.jar')
 }
