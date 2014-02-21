@@ -30,7 +30,6 @@ import java.util.Set;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
 import com.rapidminer.BCProvider;
-import com.rapidminer.gui.tools.ResourceAction;
 import com.rapidminer.parameter.SuggestionProvider;
 import com.rapidminer.tools.ProgressListener;
 
@@ -42,7 +41,7 @@ import com.rapidminer.tools.ProgressListener;
  * @author Nils Woehler
  * 
  */
-public enum BCAlgorithmSuggestionProvider implements SuggestionProvider {
+public enum BCAlgorithmSuggestionProvider {
 
 	INSTANCE;
 	
@@ -55,7 +54,6 @@ public enum BCAlgorithmSuggestionProvider implements SuggestionProvider {
 	private static final String PBE = "PBE";
 	private List<Object> algorithms = null;
 
-	@Override
 	public synchronized List<Object> getSuggestions(Operator arg0,
 			ProgressListener arg1) {
 		if (algorithms == null) {
@@ -100,11 +98,6 @@ public enum BCAlgorithmSuggestionProvider implements SuggestionProvider {
 				algorithmNames);
 		Collections.sort(sortedAlgorithmNameList, Collections.reverseOrder());
 		return new ArrayList<Object>(sortedAlgorithmNameList);
-	}
-
-	@Override
-	public ResourceAction getAction() {
-		return null;
 	}
 
 	/**
