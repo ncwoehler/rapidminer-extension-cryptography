@@ -1,5 +1,5 @@
 /*
- *  RapidMiner Encryption Extension
+ *  RapidMiner Cryptography Extension
  *
  *  Copyright (C) 2014 by Nils Woehler
  *
@@ -26,10 +26,14 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import org.jasypt.registry.AlgorithmRegistry;
+
 import com.rapidminer.gui.MainFrame;
 import com.rapidminer.repository.RepositoryException;
 import com.rapidminer.tools.FileSystemService;
 import com.rapidminer.tools.Tools;
+import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
+import com.rapidminer.tools.expression.parser.HashFunction;
 
 /**
  * This class provides hooks for initialization.
@@ -40,6 +44,8 @@ public class PluginInitCryptography {
 
 	public static final String BC_JAR_NAME = "bcprov-jdk15on-150.jar";
 
+	public static final String FUNCTION_GROUP = "Hash Functions";
+
 	/**
 	 * This method will be called directly after the extension is initialized.
 	 * This is the first hook during start up. No initialization of the
@@ -47,8 +53,10 @@ public class PluginInitCryptography {
 	 */
 	public static void initPlugin() {
 		try {
-			File rapidMinerUserFolder = FileSystemService.getUserRapidMinerDir();
-			File encryptionDir = new File(rapidMinerUserFolder, "encryption-provider");
+			File rapidMinerUserFolder = FileSystemService
+					.getUserRapidMinerDir();
+			File encryptionDir = new File(rapidMinerUserFolder,
+					"encryption-provider");
 			if (!encryptionDir.exists()) {
 				encryptionDir.mkdir();
 			}
@@ -61,11 +69,19 @@ public class PluginInitCryptography {
 			registerBCProviderJar(bcprovider,
 					(URLClassLoader) PluginInitCryptography.class
 							.getClassLoader());
-			
+
 			// initialize the BCProvider enum
 			BCProvider.INSTANCE.get();
 		} catch (IOException | RepositoryException e) {
 			throw new RuntimeException("Error loading BC provider jar.", e);
+		}
+		registerDigestFunctions();
+	}
+
+	private static void registerDigestFunctions() {
+		for (Object algo : AlgorithmRegistry.getAllDigestAlgorithms()) {
+			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
+					new HashFunction((String) algo));
 		}
 	}
 
