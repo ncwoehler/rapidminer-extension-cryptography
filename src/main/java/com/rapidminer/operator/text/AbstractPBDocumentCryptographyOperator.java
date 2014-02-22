@@ -63,7 +63,7 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 
 	public AbstractPBDocumentCryptographyOperator(OperatorDescription description) {
 		super(description);
-
+		
 		getTransformer().addRule(new MDTransformationRule() {
 
 			@Override
@@ -89,10 +89,20 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 		Document input = documentInput.getData(Document.class);
 
 		// encrypt/decrypt text
-		String text = transformText(configureEncryptor(), input.getText());
+		String text = transformText(configureEncryptor(), getText(input));
 
 		// deliver transformed document
 		documentOut.deliver(new Document(text));
+	}
+
+	private String getText(Document input) {
+		StringBuilder builder = new StringBuilder();
+		List<Token> tokenSequence = input.getTokenSequence();
+		for(Token token : tokenSequence) {
+			builder.append(token.getToken());
+			builder.append(" ");
+		}
+		return builder.toString().trim();
 	}
 
 	/**
