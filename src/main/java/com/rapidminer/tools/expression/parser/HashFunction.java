@@ -18,16 +18,6 @@
  */
 package com.rapidminer.tools.expression.parser;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Date;
-
-import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
-import org.jasypt.digest.StandardByteDigester;
-
-import com.rapidminer.BCProvider;
-
 /**
  * 
  * A JEP function that calculate the hash value of the provided input.
@@ -35,150 +25,52 @@ import com.rapidminer.BCProvider;
  * @author Nils Woehler
  * 
  */
-public class HashFunction implements Function {
+public class HashFunction extends AbstractHashFunction<String> {
 
-	// BASE64 encoder which will make sure the returned digests are
-	// valid US-ASCII strings.
-	// The Base64 encoder is THREAD-SAFE
-	private static final Base64 BASE64 = new Base64();
-
-	// Charset to
-	public static final String DIGEST_CHARSET = "US-ASCII";
+	public HashFunction(String algorithm) {
+		super(algorithm, getHashFunctionName(algorithm));
+	}
 
 	/**
-	 * The name used as RapidMiner function.
+	 * @return the function name to be used from within RapidMiner
 	 */
-	private final String functionName;
-
-	/**
-	 * The function ID used to select the algorithm from the algorithm provider.
-	 */
-	private final String functionID;
-
-	public HashFunction(String functionID) {
-		this.functionID = functionID;
-		this.functionName = functionID.replace("-", "").toLowerCase();
+	protected static String getHashFunctionName(String functionID) {
+		return functionID.replace("-", "").toLowerCase();
 	}
 
 	@Override
-	public Object compute(Object... arguments) throws JEPFunctionException {
-		StandardByteDigester digester = new StandardByteDigester();
-		digester.setAlgorithm(functionID);
-		digester.setProvider(BCProvider.INSTANCE.get());
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				DataOutputStream dos = new DataOutputStream(baos);) {
-
-			int messageIndex = 0;
-			switch (arguments.length) {
-			case 0:
-				throw new JEPFunctionException("No input defined");
-			case 1:
-				// only message as input, use default values
-				configureSaltSize(digester, 0, new Object[] {0});
-				configureNumberOfIterations(digester, 0, new Object[] {1});
-				break;
-			case 2:
-				// salt size defined
-				messageIndex = 1;
-				configureSaltSize(digester, 0, arguments);
-				break;
-			case 3:
-				// salt size and number of iterations defined
-				messageIndex = 2;
-				configureNumberOfIterations(digester, 0, arguments);
-				configureSaltSize(digester, 1, arguments);
-				break;
-			default:
-				throw new JEPFunctionException("Too many arguments. For "
-						+ functionName + " only three arguments are supported.");
-
-			}
-			return new String(BASE64.encode(digester.digest(getBytes(baos, dos,
-					messageIndex, arguments))), DIGEST_CHARSET);
-		} catch (Throwable t) {
-			throw new JEPFunctionException("Error calculating " + functionID
-					+ " hash value: " + t.getLocalizedMessage());
-		}
-	}
-
-	private void configureNumberOfIterations(StandardByteDigester digester,
-			int index, Object... arguments) throws JEPFunctionException {
-		Object arg2 = arguments[index];
-		Integer numberOfIterations = 1;
-		if (arg2 instanceof Number) {
-			numberOfIterations = ((Number) arg2).intValue();
-		} else {
-			throw new JEPFunctionException(
-					"Wrong input type for number of iterations argument. Only numbers are allowed.");
-		}
-		if (numberOfIterations < 1) {
-			throw new JEPFunctionException(
-					"The number of iterations has to be >= 1. Specified number of iterations: "
-							+ numberOfIterations);
-		}
-		digester.setIterations(numberOfIterations);
-	}
-
-	private void configureSaltSize(StandardByteDigester digester, int index,
-			Object... arguments) throws JEPFunctionException {
-		Object arg1 = arguments[index];
-		Integer saltSize = 8;
-		if (arg1 instanceof Number) {
-			saltSize = ((Number) arg1).intValue();
-		} else {
-			throw new JEPFunctionException(
-					"Wrong input type for salt size argument. Only numbers are allowed.");
-		}
-		if (saltSize < 0) {
-			throw new JEPFunctionException("The salt size has to be >= 0. "
-					+ "Specified salt size: " + saltSize);
-		}
-		digester.setSaltSizeBytes(saltSize);
-	}
-
-	private byte[] getBytes(ByteArrayOutputStream baos, DataOutputStream dos,
-			int index, Object... arguments) throws IOException {
-		Object value = arguments[index];
-		if (value instanceof String) {
-			dos.writeUTF((String) value);
-		} else if (value instanceof Integer) {
-			dos.writeInt((int) value);
-		} else if (value instanceof Long) {
-			dos.writeLong((long) value);
-		} else if (value instanceof Float) {
-			dos.writeFloat((float) value);
-		} else if (value instanceof Date) {
-			dos.writeLong(((Date) value).getTime());
-		} else if (value instanceof Double) {
-			dos.writeDouble((double) value);
-		}
-		return baos.toByteArray();
+	protected String apply(DigesterConfig config, Object... arguments)
+			throws JEPFunctionException {
+		return Digester.INSTANCE
+				.digest(arguments[arguments.length - 1], config);
 	}
 
 	@Override
-	public FunctionDescription getFunctionDescription() {
-		return new FunctionDescription(
-				functionName,
-				functionName,
-				"<html><div style='width: 550px;'>Calculates the BASE64 encoded "
-						+ functionID
-						+ " hash value of the specified input. The default number of salt bytes is 0 and the default number of iterations is 1."
-						+ " The default values will return equal results for consecutive calls with the same input." 
-						+ "<br/><br/> Increasing the number of salt bytes (e.g. to 8) will return different results consecutive calls with the same input."
-						+ "To check whether two hashes created with at least one salt byte are equal use 'match_"
-						+ functionName
-						+ "'. "
-						+ "<ul>"
-						+ "<li>The first parameter defines the input for which the hash value should be calculated. </li>"
-						+ "<li>The second parameter is optional and defines the number of bytes that should be used as salt (Default: 0, Minimum: 0).</li>"
-						+ "<li>The third parameter is optional and defines the number of iterations (Default: 1, Minimum: 1).</li>"
-						+ "</ul></div><html>",
-				FunctionDescription.UNLIMITED_NUMBER_OF_ARGUMENTS);
+	protected String getHelpText(String algorithm) {
+		return "<html><div style='width: 550px;'>Calculates the BASE64 encoded "
+				+ algorithm
+				+ " hash value of the specified input. The default number of salt bytes is 0 and the default number of iterations is 1."
+				+ " The default values will return equal results for consecutive calls with the same input."
+				+ "<br/><br/> Increasing the number of salt bytes (e.g. to 8) will return different results consecutive calls with the same input."
+				+ "To check whether two hashes created with at least one salt byte are equal use '"
+				+ HashMatcherFunction.PREFIX
+				+ getFunctionName()
+				+ "'. "
+				+ "<ul>"
+				+ "<li>The first parameter defines the input for which the hash value should be calculated. </li>"
+				+ "<li>The second parameter is optional and defines the number of bytes that should be used as salt (Default: 0, Minimum: 0).</li>"
+				+ "<li>The third parameter is optional and defines the number of iterations (Default: 1, Minimum: 1).</li>"
+				+ "</ul></div><html>";
 	}
 
 	@Override
-	public String getFunctionName() {
-		return functionName;
+	protected int getMaxArguments() {
+		return 3;
+	}
+
+	@Override
+	protected int getMinArguments() {
+		return 1;
 	}
 
 }
