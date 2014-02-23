@@ -25,8 +25,10 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import org.jasypt.registry.AlgorithmRegistry;
+import java.security.Security;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.rapidminer.gui.MainFrame;
 import com.rapidminer.repository.RepositoryException;
@@ -34,6 +36,7 @@ import com.rapidminer.tools.FileSystemService;
 import com.rapidminer.tools.Tools;
 import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
 import com.rapidminer.tools.expression.parser.HashFunction;
+import com.rapidminer.tools.expression.parser.HashMatcherFunction;
 
 /**
  * This class provides hooks for initialization.
@@ -79,9 +82,14 @@ public class PluginInitCryptography {
 	}
 
 	private static void registerDigestFunctions() {
-		for (Object algo : AlgorithmRegistry.getAllDigestAlgorithms()) {
+		final List<String> algos = new ArrayList<String>(
+				Security.getAlgorithms("MessageDigest"));
+		Collections.sort(algos);
+		for (String algo : algos) {
 			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
-					new HashFunction((String) algo));
+					new HashFunction(algo));
+			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
+					new HashMatcherFunction(algo));
 		}
 	}
 

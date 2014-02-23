@@ -36,8 +36,10 @@ buildDir = "target"
 repositories { mavenCentral() }
 
 dependencies {
-	provided fileTree(dir: rapidminerHome + '/lib', include: '*.jar')
+	provided files(rapidminerHome + '/lib/rapidminer.jar')
 }
+
+test { useTestNG() }
 
 apply from: file('dependencies.gradle')
 
@@ -89,6 +91,4 @@ task install(type: Copy, dependsOn: jar) {
 	into rapidminerHome + "/lib/plugins"
 }
 
-task release(dependsOn: jar) << {
-	print "Created release for version: " + version
-}
+task release(dependsOn: jar) << { print "Created release for version: " + version }
