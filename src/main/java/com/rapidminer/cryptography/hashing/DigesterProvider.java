@@ -23,6 +23,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 
 import com.rapidminer.cryptography.BCAlgorithmProvider;
 import com.rapidminer.tools.expression.parser.JEPFunctionException;
+import com.rapidminer.tools.expression.parser.UnknownValue;
 
 /**
  * A container class executing the digest and matching functions. It contains a
@@ -43,7 +45,7 @@ import com.rapidminer.tools.expression.parser.JEPFunctionException;
  * @author Nils Woehler
  * 
  */
-enum Digester {
+enum DigesterProvider {
 
 	INSTANCE;
 
@@ -223,10 +225,14 @@ enum Digester {
 			dos.writeLong((long) value);
 		} else if (value instanceof Float) {
 			dos.writeFloat((float) value);
+		} else if (value instanceof GregorianCalendar) {
+			dos.writeLong(((GregorianCalendar) value).getTimeInMillis());
 		} else if (value instanceof Date) {
 			dos.writeLong(((Date) value).getTime());
 		} else if (value instanceof Double) {
 			dos.writeDouble((double) value);
+		} else if (value instanceof UnknownValue) {
+			dos.writeDouble(Double.NaN);
 		} else {
 			// should not happen
 			throw new JEPFunctionException("Unknown input type: "

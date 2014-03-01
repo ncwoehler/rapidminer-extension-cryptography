@@ -44,7 +44,7 @@ public class HashMatcherFunction extends AbstractHashFunction<Boolean> {
 			throw new JEPFunctionException(
 					"Wrong type for hash value. Only base64 encoded hash values are allowed!");
 		}
-		return Digester.INSTANCE.matches(arguments[arguments.length - 1],
+		return DigesterProvider.INSTANCE.matches(arguments[arguments.length - 1],
 				(String) hash, config);
 	}
 

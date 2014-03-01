@@ -43,7 +43,7 @@ public class HashFunction extends AbstractHashFunction<String> {
 	@Override
 	protected String apply(DigesterConfig config, Object... arguments)
 			throws JEPFunctionException {
-		return Digester.INSTANCE
+		return DigesterProvider.INSTANCE
 				.digest(arguments[arguments.length - 1], config);
 	}
 
