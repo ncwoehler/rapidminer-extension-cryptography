@@ -9,8 +9,8 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.rapidminer.tools.expression.parser.HashFunction;
-import com.rapidminer.tools.expression.parser.HashMatcherFunction;
+import com.rapidminer.cryptography.hashing.HashFunction;
+import com.rapidminer.cryptography.hashing.HashMatcherFunction;
 import com.rapidminer.tools.expression.parser.JEPFunctionException;
 
 public class HashMatcherFunctionTests {

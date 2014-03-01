@@ -16,10 +16,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.tools.expression.parser;
+package com.rapidminer.cryptography.hashing;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +31,9 @@ import org.jasypt.contrib.org.apache.commons.codec_1_3.binary.Base64;
 import org.jasypt.digest.PooledByteDigester;
 import org.jasypt.exceptions.EncryptionInitializationException;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
+
+import com.rapidminer.cryptography.BCAlgorithmProvider;
+import com.rapidminer.tools.expression.parser.JEPFunctionException;
 
 /**
  * A container class executing the digest and matching functions. It contains a
@@ -67,6 +71,28 @@ enum Digester {
 		// convert input to byte array
 		byte[] bytes = getBytes(value);
 
+		// digest input
+		return digest(bytes, config);
+	}
+
+	/**
+	 * Converts the provided values to a base64 encoded hash representation. The
+	 * conversion is done by converting the values to a byte[] on which the hash
+	 * function is applied.
+	 */
+	protected String digest(Object[] value, DigesterConfig config)
+			throws JEPFunctionException {
+
+		// convert input to byte array
+		byte[] bytes = getBytes(value);
+
+		// digest input
+		return digest(bytes, config);
+	}
+
+	private String digest(byte[] bytes, DigesterConfig config)
+			throws JEPFunctionException {
+
 		// digest input array
 		byte[] digested;
 		try {
@@ -83,7 +109,6 @@ enum Digester {
 			// cannot happen
 			throw new RuntimeCryptoException(e.getLocalizedMessage());
 		}
-
 	}
 
 	/**
@@ -137,6 +162,7 @@ enum Digester {
 		if (digester == null) {
 			digester = new PooledByteDigester();
 			digester.setConfig(config.toDigesterConfig());
+			digester.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
 			try {
 				digester.initialize();
 			} catch (EncryptionInitializationException e) {
@@ -158,27 +184,53 @@ enum Digester {
 	private byte[] getBytes(Object value) throws JEPFunctionException {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(baos);) {
-			if (value instanceof String) {
-				dos.writeUTF((String) value);
-			} else if (value instanceof Integer) {
-				dos.writeInt((int) value);
-			} else if (value instanceof Long) {
-				dos.writeLong((long) value);
-			} else if (value instanceof Float) {
-				dos.writeFloat((float) value);
-			} else if (value instanceof Date) {
-				dos.writeLong(((Date) value).getTime());
-			} else if (value instanceof Double) {
-				dos.writeDouble((double) value);
-			} else {
-				// should not happen
-				throw new JEPFunctionException("Unknown input type: "
-						+ value.getClass());
+			writeBytes(value, dos);
+			return baos.toByteArray();
+		} catch (Throwable t) {
+			throw new JEPFunctionException("Error calculating hash value: "
+					+ t.getLocalizedMessage());
+		}
+	}
+
+	/**
+	 * Convert an array of Objects to a byte array. The values of the object
+	 * array have to be an instance of String, Integer, Long, Float, Date or
+	 * Double.
+	 */
+	private byte[] getBytes(Object[] values) throws JEPFunctionException {
+		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				DataOutputStream dos = new DataOutputStream(baos);) {
+			for (Object value : values) {
+				writeBytes(value, dos);
 			}
 			return baos.toByteArray();
 		} catch (Throwable t) {
 			throw new JEPFunctionException("Error calculating hash value: "
 					+ t.getLocalizedMessage());
+		}
+	}
+
+	/**
+	 * Writes the provided value to the provided {@link DataOutputStream}.
+	 */
+	private void writeBytes(Object value, DataOutputStream dos)
+			throws IOException, JEPFunctionException {
+		if (value instanceof String) {
+			dos.writeUTF((String) value);
+		} else if (value instanceof Integer) {
+			dos.writeInt((int) value);
+		} else if (value instanceof Long) {
+			dos.writeLong((long) value);
+		} else if (value instanceof Float) {
+			dos.writeFloat((float) value);
+		} else if (value instanceof Date) {
+			dos.writeLong(((Date) value).getTime());
+		} else if (value instanceof Double) {
+			dos.writeDouble((double) value);
+		} else {
+			// should not happen
+			throw new JEPFunctionException("Unknown input type: "
+					+ value.getClass());
 		}
 	}
 }

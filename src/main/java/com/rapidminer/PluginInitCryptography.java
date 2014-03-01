@@ -25,18 +25,15 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
+import com.rapidminer.cryptography.BCAlgorithmProvider;
+import com.rapidminer.cryptography.hashing.HashFunction;
+import com.rapidminer.cryptography.hashing.HashMatcherFunction;
 import com.rapidminer.gui.MainFrame;
 import com.rapidminer.repository.RepositoryException;
 import com.rapidminer.tools.FileSystemService;
 import com.rapidminer.tools.Tools;
 import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
-import com.rapidminer.tools.expression.parser.HashFunction;
-import com.rapidminer.tools.expression.parser.HashMatcherFunction;
 
 /**
  * This class provides hooks for initialization.
@@ -74,7 +71,7 @@ public class PluginInitCryptography {
 							.getClassLoader());
 
 			// initialize the BCProvider enum
-			BCProvider.INSTANCE.get();
+			BCAlgorithmProvider.INSTANCE.getProvider();
 		} catch (IOException | RepositoryException e) {
 			throw new RuntimeException("Error loading BC provider jar.", e);
 		}
@@ -82,10 +79,7 @@ public class PluginInitCryptography {
 	}
 
 	private static void registerDigestFunctions() {
-		final List<String> algos = new ArrayList<String>(
-				Security.getAlgorithms("MessageDigest"));
-		Collections.sort(algos);
-		for (String algo : algos) {
+		for (String algo : BCAlgorithmProvider.INSTANCE.getHashFunctions()) {
 			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
 					new HashFunction(algo));
 			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,

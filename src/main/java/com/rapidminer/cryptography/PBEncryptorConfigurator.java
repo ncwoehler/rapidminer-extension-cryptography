@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator;
+package com.rapidminer.cryptography;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +26,7 @@ import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEByteEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 
-import com.rapidminer.BCProvider;
+import com.rapidminer.operator.Operator;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypePassword;
@@ -41,7 +41,7 @@ import com.rapidminer.parameter.conditions.EqualTypeCondition;
  * @author Nils Woehler
  * 
  */
-public class PBCryptographyConfigurator {
+public class PBEncryptorConfigurator {
 
 	public static final String PARAMETER_PASSWORD = "password";
 
@@ -63,7 +63,7 @@ public class PBCryptographyConfigurator {
 
 	// presented user defined algorithm in user friendly fashion
 	public static final String DEFAULT_USER_ALGORITHM_NAME = "MD5 and 256BITAES-CBC-OPENSSL";
-	
+
 	/**
 	 * Creates a byte encryptor according to the specified parameters.
 	 */
@@ -72,7 +72,7 @@ public class PBCryptographyConfigurator {
 		PooledPBEByteEncryptor encryptor = new PooledPBEByteEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
-		encryptor.setProvider(BCProvider.INSTANCE.get());
+		encryptor.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
 		return encryptor;
 	}
 
@@ -84,7 +84,7 @@ public class PBCryptographyConfigurator {
 		PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
-		encryptor.setProvider(BCProvider.INSTANCE.get());
+		encryptor.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
 		return encryptor;
 	}
 
@@ -97,7 +97,7 @@ public class PBCryptographyConfigurator {
 		case STRONG_ALGORITHM:
 			return STRONG_ALGORITHM_NAME;
 		default:
-			return BCAlgorithmSuggestionProvider.toAlgorithmID(op
+			return BCAlgorithmProvider.toAlgorithmID(op
 					.getParameterAsString(PARAMETER_ALGORITHM));
 		}
 	}
@@ -120,8 +120,8 @@ public class PBCryptographyConfigurator {
 				"Defines the algorithm strength used for  encryption/decryption.",
 				ALGORITHM_STRENGTHS, 1, false));
 
-		List<Object> suggestions = BCAlgorithmSuggestionProvider.INSTANCE
-				.getSuggestions(null, null);
+		List<Object> suggestions = BCAlgorithmProvider.INSTANCE
+				.getPBEAlgorithms();
 
 		ParameterTypeCategory suggestion = new ParameterTypeCategory(
 				PARAMETER_ALGORITHM,
