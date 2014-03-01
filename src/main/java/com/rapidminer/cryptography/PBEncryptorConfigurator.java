@@ -73,6 +73,7 @@ public class PBEncryptorConfigurator {
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
 		encryptor.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
+		encryptor.setPoolSize(getPoolSize());
 		return encryptor;
 	}
 
@@ -85,7 +86,13 @@ public class PBEncryptorConfigurator {
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
 		encryptor.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
+		encryptor.setPoolSize(getPoolSize());
 		return encryptor;
+	}
+
+	private int getPoolSize() {
+		return Math.max(1, Runtime.getRuntime()
+				.availableProcessors() - 1);
 	}
 
 	private String getAlgorithm(Operator op) throws UndefinedParameterError {
