@@ -16,11 +16,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.tools.expression.parser;
+package com.rapidminer.cryptography.hashing;
 
 import org.jasypt.digest.config.SimpleDigesterConfig;
 
-import com.rapidminer.BCProvider;
+import com.rapidminer.cryptography.BCAlgorithmProvider;
 
 /**
  * Container class that is being used to store values used for configuring
@@ -63,7 +63,7 @@ class DigesterConfig {
 
 	public org.jasypt.digest.config.DigesterConfig toDigesterConfig() {
 		SimpleDigesterConfig config = new SimpleDigesterConfig();
-		config.setProvider(BCProvider.INSTANCE.get());
+		config.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
 		config.setIterations(getIterations());
 		config.setAlgorithm(getAlgorithm());
 		config.setSaltSizeBytes(getSaltSize());

@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator.nio.file;
+package com.rapidminer.cryptography.file;
 
 import org.jasypt.encryption.pbe.PBEByteEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
@@ -25,14 +25,14 @@ import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.UserError;
 
 /**
- * Operator for decrypting files.
+ * Operator for encrypting files.
  * 
  * @author Nils Woehler
  * 
  */
-public class PBFileDecryptionOperator extends AbstractPBFileCryptographyOperator {
+public class PBFileEncryptionOperator extends AbstractPBFileCryptographyOperator {
 
-	public PBFileDecryptionOperator(OperatorDescription description) {
+	public PBFileEncryptionOperator(OperatorDescription description) {
 		super(description);
 	}
 
@@ -40,15 +40,14 @@ public class PBFileDecryptionOperator extends AbstractPBFileCryptographyOperator
 	protected byte[] transformFile(PBEByteEncryptor encryptor,
 			byte[] fileContent) throws UserError {
 		try {
-			return encryptor.decrypt(fileContent);
+			return encryptor.encrypt(fileContent);
 		} catch (EncryptionOperationNotPossibleException e) {
-			throw new UserError(this, e, "file.decryption_failed");
+			throw new UserError(this, e, "file.encryption_not_possible");
 		}
 	}
 
 	@Override
 	protected boolean isEncrypting() {
-		return false;
+		return true;
 	}
-
 }

@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator.nio.file;
+package com.rapidminer.cryptography.file;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,13 +30,15 @@ import org.bouncycastle.util.encoders.DecoderException;
 import org.jasypt.encryption.pbe.PBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
+import com.rapidminer.cryptography.PBEncryptorConfigurator;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.PBCryptographyConfigurator;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.nio.file.FileInputPortHandler;
+import com.rapidminer.operator.nio.file.FileOutputPortHandler;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.Port;
@@ -78,7 +80,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 	private static final byte[] RANDOM_BYTES = new byte[] { 81, 79, 11, 28, 64,
 			42, 41 };
 
-	private static final PBCryptographyConfigurator ALGORITHM_PROVIDER = new PBCryptographyConfigurator();
+	private static final PBEncryptorConfigurator ALGORITHM_PROVIDER = new PBEncryptorConfigurator();
 
 	public AbstractPBFileCryptographyOperator(OperatorDescription description) {
 		super(description);

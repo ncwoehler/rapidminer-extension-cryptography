@@ -16,23 +16,25 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator.text;
+package com.rapidminer.cryptography.text;
 
 import java.util.List;
 
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 
+import com.rapidminer.cryptography.PBEncryptorConfigurator;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.PBCryptographyConfigurator;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.metadata.MDTransformationRule;
+import com.rapidminer.operator.text.Document;
+import com.rapidminer.operator.text.Token;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.UndefinedParameterError;
 
@@ -54,7 +56,7 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 	 */
 	private static final String RANDOM_TEXT = "This is sparta!";
 
-	private static final PBCryptographyConfigurator ALGORITHM_PROVIDER = new PBCryptographyConfigurator();
+	private static final PBEncryptorConfigurator ALGORITHM_PROVIDER = new PBEncryptorConfigurator();
 
 	private final InputPort documentInput = getInputPorts().createPort(
 			DOCUMENT_INPUT, Document.class);

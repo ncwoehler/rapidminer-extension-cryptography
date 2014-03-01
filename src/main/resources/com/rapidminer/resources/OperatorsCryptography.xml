@@ -2,19 +2,31 @@
 <operators name="template" version="5.0"
 	docbundle="com/rapidminer/resources/i18n/OperatorsDocCryptography">
 	<group key="">
+		<group key="data_transformation">
+			<group key="attribute_space_transformation">
+				<group key="generation">
+					<operator>
+						<icon>lock-icon.png</icon>
+						<key>generate_hash</key>
+						<class>com.rapidminer.cryptography.hashing.AttributeHashOperator
+						</class>
+					</operator>
+				</group>
+			</group>
+		</group>
 		<group key="utility">
 			<group key="files">
 				<group key="cryptography">
 					<operator>
 						<icon>lock-icon.png</icon>
 						<key>pbe_encrypt_file</key>
-						<class>com.rapidminer.operator.nio.file.PBFileEncryptionOperator
+						<class>com.rapidminer.cryptography.file.PBFileEncryptionOperator
 						</class>
 					</operator>
 					<operator>
 						<icon>Lock-Unlock-icon.png</icon>
 						<key>pbe_decrypt_file</key>
-						<class>com.rapidminer.operator.nio.file.PBFileDecryptionOperator
+						<class>com.rapidminer.cryptography.file.PBFileDecryptionOperator
 						</class>
 					</operator>
 				</group>
@@ -25,13 +37,13 @@
 				<operator>
 					<icon>lock-icon.png</icon>
 					<key>pbe_encrypt_document</key>
-					<class>com.rapidminer.operator.text.PBDocumentEncryptionOperator
+					<class>com.rapidminer.cryptography.text.PBDocumentEncryptionOperator
 					</class>
 				</operator>
 				<operator>
 					<icon>Lock-Unlock-icon.png</icon>
 					<key>pbe_decrypt_document</key>
-					<class>com.rapidminer.operator.text.PBDocumentDecryptionOperator
+					<class>com.rapidminer.cryptography.text.PBDocumentDecryptionOperator
 					</class>
 				</operator>
 			</group>
