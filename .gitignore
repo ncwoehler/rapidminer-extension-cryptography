@@ -7,3 +7,5 @@
 target/
 .settings/gradle
 test-output
+*.classpath
+*.project
