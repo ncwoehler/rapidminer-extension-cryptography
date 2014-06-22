@@ -1,69 +1,29 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'rapidminer-extension'
 apply from: 'quality.gradle'
-apply from: 'dependencies.gradle'
 
-defaultTasks = ['Install']
-
-ext {
-	updateServerId = "rmx_" + namespace
-	rapidminerHome = "../rapidminer-original"
+buildscript {
+	dependencies {
+		classpath 'com.rapidminer.gradle:rapidminer-extension-plugin:1.0.000-SNAPSHOT'
+	}
 }
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+dependencies {
+	compile 'org.jasypt:jasypt:1.9.1:lite'
+	provided 'org.bouncycastle:bcprov-jdk15on:1.50'
+	provided 'com.rapidminer.extension.release:rapidminer-extension-text-processing:5.3.002'
+	testCompile 'org.testng:testng:6.1.1'
+}
 
-version = major + "." + minor + "." + patch
-group = vendor
+extension {
+	shortName 'Cryptography'
+	longName 'RapidMiner Cryptography Extension'
+	namespace 'cryptography'
+	vendor 'com.github.ncwoehler'
+	admin 'Nils Woehler'
+	homepage 'http://ncwoehler.github.io/rapidminer-extension-cryptography'
+	rapidminerVersion '6.0.003'
+	extensionDependencies 'rmx_text[5.3]'
+}
 
 test { useTestNG() }
 
-jar {
-	// adds runtime dependencies to jar package
-	dependsOn configurations.runtime
-	from ({configurations.runtime.collect {it.isDirectory() ? it : zipTree(it)}}) {
-		// remove all signature files
-		exclude "META-INF/*.SF"
-		exclude "META-INF/*.DSA"
-		exclude "META-INF/*.RSA"
-	}
-	manifest {
-		attributes("Manifest-Version": 		"1.0",
-		"Implementation-Vendor": 	vendor,
-		"Implementation-Title":		extensionName,
-		"Implementation-URL":		homepage,
-		"Implementation-Version": 	version,
-		"Specification-Title": 		extensionName,
-		"Specification-Version":	version,
-		"RapidMiner-Version":		minRMVersion,
-		"RapidMiner-Type":			"RapidMiner_Extension",
-		"Plugin-Dependencies":		extensionDependencies,
-
-		// Definition of important files
-		"Extension-ID":				updateServerId,
-		"Namespace":				namespace,
-		"Initialization-Class":		initClass,
-		"IOObject-Descriptor":		objectDefinition,
-		"Operator-Descriptor":		operatorDefinition,
-		"ParseRule-Descriptor":		parseRuleDefinition,
-		"Group-Descriptor":			groupProperties,
-		"Error-Descriptor":			errorDescription,
-		"UserError-Descriptor":		userErrors,
-		"GUI-Descriptor":			guiDescription
-		)
-	}
-}
-
-gradle.taskGraph.whenReady {taskGraph ->
-	if (!taskGraph.hasTask(':release')) {
-		version = major + "." + minor + "." + patch + "-SNAPSHOT"
-	}
-}
-
-// Copies outputs of jar to the plugins directory of RapidMiner
-task install(type: Copy, dependsOn: jar) {
-	from jar
-	into rapidminerHome + "/lib/plugins"
-}
-
-task release(dependsOn: jar) << { print "Created release for version: " + version }
