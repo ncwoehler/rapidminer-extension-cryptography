@@ -2,8 +2,13 @@ apply plugin: 'rapidminer-extension'
 apply from: 'quality.gradle'
 
 buildscript {
+	configurations.all {
+    	// check for updates every build
+    	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+	}
+
 	dependencies {
-		classpath 'com.rapidminer.gradle:rapidminer-extension-plugin:1.0.000-SNAPSHOT'
+		classpath group: 'com.rapidminer.gradle', name: 'rapidminer-extension-plugin', version:'1.0.000-SNAPSHOT', changing: true
 	}
 }
 
@@ -15,14 +20,19 @@ dependencies {
 }
 
 extension {
-	shortName 'Cryptography'
-	longName 'RapidMiner Cryptography Extension'
-	namespace 'cryptography'
+	name 'Cryptography'
 	vendor 'com.github.ncwoehler'
 	admin 'Nils Woehler'
 	homepage 'http://ncwoehler.github.io/rapidminer-extension-cryptography'
 	rapidminerVersion '6.0.003'
 	extensionDependencies 'rmx_text[5.3]'
+	
+	resources {
+		initClass 'com.rapidminer.PluginInitCryptography'
+		operatorDefinition '/com/rapidminer/resources/OperatorsCryptography.xml'
+		errorDescription  '/com/rapidminer/resources/i18n/ErrorsCryptography.properties'
+		userErrors  '/com/rapidminer/resources/i18n/UserErrorMessagesCryptography.properties'
+	}
 }
 
 test { useTestNG() }
