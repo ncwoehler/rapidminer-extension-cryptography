@@ -1,12 +1,13 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply from: file('quality.gradle')
+apply from: 'quality.gradle'
+apply from: 'dependencies.gradle'
 
 defaultTasks = ['Install']
 
 ext {
 	updateServerId = "rmx_" + namespace
-	rapidminerHome = "../rapidminer"
+	rapidminerHome = "../rapidminer-original"
 }
 
 sourceCompatibility = 1.7
@@ -15,33 +16,7 @@ targetCompatibility = 1.7
 version = major + "." + minor + "." + patch
 group = vendor
 
-// ###################
-// Dirty hack to create Maven like provided configuration
-// See http://issues.gradle.org/browse/GRADLE-784
-configurations { provided }
-
-sourceSets {
-	main.compileClasspath += configurations.provided
-	test.compileClasspath += configurations.provided
-	test.runtimeClasspath += configurations.provided
-}
-
-eclipse.classpath.plusConfigurations += configurations.provided
-
-// ####################
-
-// minimize changes, at least for now (gradle uses 'build' by default)
-buildDir = "target"
-
-repositories { mavenCentral() }
-
-dependencies {
-	provided files(rapidminerHome + '/lib/rapidminer.jar')
-}
-
 test { useTestNG() }
-
-apply from: file('dependencies.gradle')
 
 jar {
 	// adds runtime dependencies to jar package
