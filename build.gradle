@@ -1,9 +1,9 @@
-apply from: 'quality.gradle'
 apply plugin: 'rapidminer-extension'
+apply from: 'quality.gradle'
 
 buildscript {
 	dependencies {
-		classpath 'com.rapidminer.gradle:extension:0.1.0'
+		classpath 'com.rapidminer.gradle:extension:0.1.2'
 	}
 }
 
@@ -15,8 +15,8 @@ dependencies {
 
 extensionConfig {
 	name 'Cryptography'
-	vendor 'com.github.ncwoehler'
-	admin 'Nils Woehler'
+	vendor 'Nils Woehler'
+	groupId 'com.github.ncwoehler'
 	homepage 'http://ncwoehler.github.io/rapidminer-extension-cryptography'
 
 	dependencies {
