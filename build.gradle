@@ -1,37 +1,27 @@
-apply plugin: 'rapidminer-extension'
 apply from: 'quality.gradle'
+apply plugin: 'rapidminer-extension'
 
 buildscript {
-	configurations.all {
-    	// check for updates every build
-    	resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-	}
-
 	dependencies {
-		classpath group: 'com.rapidminer.gradle', name: 'rapidminer-extension-plugin', version:'1.0.000-SNAPSHOT', changing: true
+		classpath 'com.rapidminer.gradle:extension:0.1.0'
 	}
 }
 
 dependencies {
 	compile 'org.jasypt:jasypt:1.9.1:lite'
 	provided 'org.bouncycastle:bcprov-jdk15on:1.50'
-	provided 'com.rapidminer.extension.release:rapidminer-extension-text-processing:5.3.002'
 	testCompile 'org.testng:testng:6.1.1'
 }
 
-extension {
+extensionConfig {
 	name 'Cryptography'
 	vendor 'com.github.ncwoehler'
 	admin 'Nils Woehler'
 	homepage 'http://ncwoehler.github.io/rapidminer-extension-cryptography'
-	rapidminerVersion '6.0.003'
-	extensionDependencies 'rmx_text[5.3]'
-	
-	resources {
-		initClass 'com.rapidminer.PluginInitCryptography'
-		operatorDefinition '/com/rapidminer/resources/OperatorsCryptography.xml'
-		errorDescription  '/com/rapidminer/resources/i18n/ErrorsCryptography.properties'
-		userErrors  '/com/rapidminer/resources/i18n/UserErrorMessagesCryptography.properties'
+
+	dependencies {
+		rapidminer '6.0.003'
+		extension namespace: 'text', version: '5.3.2'
 	}
 }
 
