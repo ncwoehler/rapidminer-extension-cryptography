@@ -3,7 +3,7 @@ apply from: 'quality.gradle'
 
 buildscript {
 	dependencies {
-		classpath 'com.rapidminer.gradle:extension:0.1.2'
+		classpath 'com.rapidminer.gradle:extension:0.2.3'
 	}
 }
 
@@ -21,7 +21,7 @@ extensionConfig {
 
 	dependencies {
 		rapidminer '6.0.003'
-		extension namespace: 'text', version: '5.3.2'
+		extension namespace: 'text', version: '5.3.002'
 	}
 }
 
