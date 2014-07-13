@@ -1,9 +1,8 @@
 apply plugin: 'rapidminer-extension'
-apply from: 'quality.gradle'
 
 buildscript {
 	dependencies {
-		classpath 'com.rapidminer.gradle:extension:0.2.3'
+		classpath 'com.rapidminer.gradle:extension:0.3.0'
 	}
 }
 
