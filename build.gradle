@@ -2,7 +2,7 @@ apply plugin: 'rapidminer-extension'
 
 buildscript {
 	dependencies {
-		classpath 'com.rapidminer.gradle:extension:0.3.0'
+		classpath 'com.rapidminer.gradle:extension:0.4.0'
 	}
 }
 
