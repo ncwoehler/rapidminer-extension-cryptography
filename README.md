@@ -92,6 +92,7 @@ To install the Unlimited Strength Jurisdiction Policy Files extract the files fr
 
 ## Example Process (Attribute hashing & hash value matching) 
 
+```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <process version="6.1.001-SNAPSHOT">
   <context>
@@ -118,4 +119,4 @@ To install the Unlimited Strength Jurisdiction Policy Files extract the files fr
     </process>
   </operator>
 </process>
-
+```
