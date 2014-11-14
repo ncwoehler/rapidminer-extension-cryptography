@@ -9,6 +9,8 @@ In particular it adds these four new operators:
  - Decrypt File (Password)
  - Encrypt Document (Password)
  - Decrypt Document (Password)
+ 
+ Since version 1.1 it also support hashing and hash value matching of ExampleSet values.
 
 ![example process](screenshots/example_process.png?raw=true)
 
@@ -17,7 +19,7 @@ For using strong algorithm strength the Java Cryptography Extension (JCE) Unlimi
 
 To install the Unlimited Strength Jurisdiction Policy Files extract the files from the downloaded archive and copy them to $PATH_TO_JRE/lib/security (e.g. "_C:\Program Files\RapidMiner\RapidMiner Studio\jre\lib\security_").
 
-## Example Process
+## Example Process (File and document encryption & decryption) 
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -87,4 +89,33 @@ To install the Unlimited Strength Jurisdiction Policy Files extract the files fr
   </operator>
 </process>
 ```
- 
+
+## Example Process (Attribute hashing & hash value matching) 
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process version="6.1.001-SNAPSHOT">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="6.1.001-SNAPSHOT" expanded="true" name="Process">
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="6.1.001-SNAPSHOT" expanded="true" height="60" name="Retrieve Iris" width="90" x="179" y="120">
+        <parameter key="repository_entry" value="//Samples/data/Iris"/>
+      </operator>
+      <operator activated="true" class="generate_attributes" compatibility="6.1.001-SNAPSHOT" expanded="true" height="76" name="Generate Attributes" width="90" x="380" y="120">
+        <list key="function_descriptions">
+          <parameter key="md2_a1" value="md2(a1)"/>
+          <parameter key="matches_md2_a1" value="match_md2(a1,md2_a1)"/>
+        </list>
+      </operator>
+      <connect from_op="Retrieve Iris" from_port="output" to_op="Generate Attributes" to_port="example set input"/>
+      <connect from_op="Generate Attributes" from_port="example set output" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
+
