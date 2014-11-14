@@ -1,30 +1,32 @@
-/*
- *  RapidMiner Encryption Extension
+/**
+ * RapidMiner Cryptography Extension
  *
- *  Copyright (C) 2014 by Nils Woehler
+ * Copyright (C) 2014-2014 by Nils Woehler
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator;
+package com.rapidminer.cryptography;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.encryption.pbe.PBEByteEncryptor;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEByteEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 
+import com.rapidminer.operator.Operator;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeCategory;
 import com.rapidminer.parameter.ParameterTypePassword;
@@ -39,7 +41,7 @@ import com.rapidminer.parameter.conditions.EqualTypeCondition;
  * @author Nils Woehler
  * 
  */
-public class PBCryptographyConfigurator {
+public class PBEncryptorConfigurator {
 
 	public static final String PARAMETER_PASSWORD = "password";
 
@@ -65,25 +67,32 @@ public class PBCryptographyConfigurator {
 	/**
 	 * Creates a byte encryptor according to the specified parameters.
 	 */
-	public StandardPBEByteEncryptor configureByteEncryptor(Operator op)
+	public PBEByteEncryptor configureByteEncryptor(Operator op)
 			throws UndefinedParameterError {
-		StandardPBEByteEncryptor encryptor = new StandardPBEByteEncryptor();
+		PooledPBEByteEncryptor encryptor = new PooledPBEByteEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
-		encryptor.setProvider(new BouncyCastleProvider());
+		encryptor.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
+		encryptor.setPoolSize(getPoolSize());
 		return encryptor;
 	}
 
 	/**
 	 * Creates a string encryptor according to the specified parameters.
 	 */
-	public StandardPBEStringEncryptor configureStringEncryptor(Operator op)
+	public PBEStringEncryptor configureStringEncryptor(Operator op)
 			throws UndefinedParameterError {
-		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+		PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
 		encryptor.setAlgorithm(getAlgorithm(op));
 		encryptor.setPassword(op.getParameterAsString(PARAMETER_PASSWORD));
-		encryptor.setProvider(new BouncyCastleProvider());
+		encryptor.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
+		encryptor.setPoolSize(getPoolSize());
 		return encryptor;
+	}
+
+	private int getPoolSize() {
+		return Math.max(1, Runtime.getRuntime()
+				.availableProcessors() - 1);
 	}
 
 	private String getAlgorithm(Operator op) throws UndefinedParameterError {
@@ -95,7 +104,7 @@ public class PBCryptographyConfigurator {
 		case STRONG_ALGORITHM:
 			return STRONG_ALGORITHM_NAME;
 		default:
-			return BCAlgorithmSuggestionProvider.toAlgorithmID(op
+			return BCAlgorithmProvider.toAlgorithmID(op
 					.getParameterAsString(PARAMETER_ALGORITHM));
 		}
 	}
@@ -118,8 +127,8 @@ public class PBCryptographyConfigurator {
 				"Defines the algorithm strength used for  encryption/decryption.",
 				ALGORITHM_STRENGTHS, 1, false));
 
-		List<Object> suggestions = BCAlgorithmSuggestionProvider.INSTANCE
-				.getSuggestions(null, null);
+		List<Object> suggestions = BCAlgorithmProvider.INSTANCE
+				.getPBEAlgorithms();
 
 		ParameterTypeCategory suggestion = new ParameterTypeCategory(
 				PARAMETER_ALGORITHM,

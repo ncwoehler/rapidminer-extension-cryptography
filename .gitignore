@@ -6,3 +6,11 @@
 .settings/org.eclipse.jdt.core.prefs
 target/
 .settings/gradle
+test-output
+*.classpath
+*.project
+config/checkstyle/checkstyle.xml
+.checkstyle
+.pmd
+config/pmd/ruleset.xml
+.settings/

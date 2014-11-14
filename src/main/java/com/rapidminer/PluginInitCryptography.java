@@ -1,35 +1,28 @@
-/*
- *  RapidMiner Encryption Extension
+/**
+ * RapidMiner Cryptography Extension
  *
- *  Copyright (C) 2014 by Nils Woehler
+ * Copyright (C) 2014-2014 by Nils Woehler
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
 package com.rapidminer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-
+import com.rapidminer.cryptography.BCAlgorithmProvider;
+import com.rapidminer.cryptography.hashing.HashFunction;
+import com.rapidminer.cryptography.hashing.HashMatcherFunction;
 import com.rapidminer.gui.MainFrame;
-import com.rapidminer.repository.RepositoryException;
-import com.rapidminer.tools.FileSystemService;
-import com.rapidminer.tools.Tools;
+import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
 
 /**
  * This class provides hooks for initialization.
@@ -38,7 +31,7 @@ import com.rapidminer.tools.Tools;
  */
 public class PluginInitCryptography {
 
-	public static final String BC_JAR_NAME = "bcprov-jdk15on-150.jar";
+	public static final String FUNCTION_GROUP = "Hash Functions";
 
 	/**
 	 * This method will be called directly after the extension is initialized.
@@ -46,53 +39,16 @@ public class PluginInitCryptography {
 	 * operators or renderers has taken place when this is called.
 	 */
 	public static void initPlugin() {
-		try {
-			File rapidMinerUserFolder = FileSystemService.getUserRapidMinerDir();
-			File encryptionDir = new File(rapidMinerUserFolder, "encryption-provider");
-			if (!encryptionDir.exists()) {
-				encryptionDir.mkdir();
-			}
-			File bcprovider = new File(encryptionDir, BC_JAR_NAME);
-			if (!bcprovider.exists()) {
-				storeBCProviderToDisk(bcprovider);
-			}
-
-			// register bouncy castle provider to plugin classloader
-			registerBCProviderJar(bcprovider,
-					(URLClassLoader) PluginInitCryptography.class
-							.getClassLoader());
-		} catch (IOException | RepositoryException e) {
-			throw new RuntimeException("Error loading BC provider jar.", e);
-		}
+		registerDigestFunctions();
 	}
 
-	/**
-	 * Register specified .jar to provided class loader.
-	 */
-	private static void registerBCProviderJar(File jarFile,
-			URLClassLoader classLoader) throws IOException {
-		Class<?> sysclass = URLClassLoader.class;
-
-		try {
-			Method method = sysclass.getDeclaredMethod("addURL", URL.class);
-			method.setAccessible(true);
-			method.invoke(classLoader, new Object[] { jarFile.toURI().toURL() });
-		} catch (Throwable t) {
-			t.printStackTrace();
-			throw new IOException(
-					"Error, could not add URL to system classloader");
+	private static void registerDigestFunctions() {
+		for (String algo : BCAlgorithmProvider.INSTANCE.getHashFunctions()) {
+			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
+					new HashFunction(algo));
+			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
+					new HashMatcherFunction(algo));
 		}
-	}
-
-	/**
-	 * Stores BouncyCastle provider jar from resources to disk.
-	 */
-	private static void storeBCProviderToDisk(File outputFile)
-			throws IOException, RepositoryException {
-		InputStream bcInput = Tools.getResourceInputStream("providers/"
-				+ BC_JAR_NAME);
-		Tools.copyStreamSynchronously(bcInput,
-				new FileOutputStream(outputFile), true);
 	}
 
 	/**

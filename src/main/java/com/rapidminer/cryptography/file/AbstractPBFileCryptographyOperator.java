@@ -1,22 +1,22 @@
-/*
- *  RapidMiner Encryption Extension
+/**
+ * RapidMiner Cryptography Extension
  *
- *  Copyright (C) 2014 by Nils Woehler
+ * Copyright (C) 2014-2014 by Nils Woehler
  *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
  *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package com.rapidminer.operator.nio.file;
+package com.rapidminer.cryptography.file;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,15 +27,18 @@ import java.util.List;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.bouncycastle.util.encoders.DecoderException;
+import org.jasypt.encryption.pbe.PBEByteEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEByteEncryptor;
 
+import com.rapidminer.cryptography.PBEncryptorConfigurator;
 import com.rapidminer.operator.Operator;
 import com.rapidminer.operator.OperatorDescription;
 import com.rapidminer.operator.OperatorException;
-import com.rapidminer.operator.PBCryptographyConfigurator;
 import com.rapidminer.operator.ProcessSetupError.Severity;
 import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
+import com.rapidminer.operator.nio.file.FileInputPortHandler;
+import com.rapidminer.operator.nio.file.FileOutputPortHandler;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
 import com.rapidminer.operator.ports.Port;
@@ -77,7 +80,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 	private static final byte[] RANDOM_BYTES = new byte[] { 81, 79, 11, 28, 64,
 			42, 41 };
 
-	private static final PBCryptographyConfigurator ALGORITHM_PROVIDER = new PBCryptographyConfigurator();
+	private static final PBEncryptorConfigurator ALGORITHM_PROVIDER = new PBEncryptorConfigurator();
 
 	public AbstractPBFileCryptographyOperator(OperatorDescription description) {
 		super(description);
@@ -87,7 +90,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 			@Override
 			public void transformMD() {
 				try {
-					StandardPBEByteEncryptor encryptor = configureEncryptor();
+					PBEByteEncryptor encryptor = configureEncryptor();
 					encryptor.decrypt(encryptor.encrypt(RANDOM_BYTES));
 				} catch (Throwable t) {
 					addError(new SimpleProcessSetupError(Severity.ERROR,
@@ -148,7 +151,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 	/**
 	 * Creates and configures a byte encryptor.
 	 */
-	protected StandardPBEByteEncryptor configureEncryptor()
+	protected PBEByteEncryptor configureEncryptor()
 			throws UndefinedParameterError {
 		return ALGORITHM_PROVIDER.configureByteEncryptor(this);
 	}
@@ -163,7 +166,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 	 *            the content being encrypted/decrypted
 	 * @return the encrypted/decrypted content
 	 */
-	protected abstract byte[] transformFile(StandardPBEByteEncryptor encryptor,
+	protected abstract byte[] transformFile(PBEByteEncryptor encryptor,
 			byte[] fileContent) throws UserError;
 
 	/**
