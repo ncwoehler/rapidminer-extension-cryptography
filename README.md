@@ -10,7 +10,7 @@ In particular it adds these four new operators:
  - Encrypt Document (Password)
  - Decrypt Document (Password)
  
- Since version 1.1 it also support hashing and hash value matching of ExampleSet values.
+ Since version 1.1 it also support hashing and hash value matching of ExampleSet values via new functions for the Generate Attributes operator.
 
 ![example process](screenshots/example_process.png?raw=true)
 
