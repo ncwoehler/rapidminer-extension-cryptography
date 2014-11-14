@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://rapid-i.com/schemas/documentation/reference/1.0/documentation.xsd">
 	<!-- LAST CORRECTIONS: 22/JAN/2014 -->
-	<operator key="operator.encryption:pbe_encrypt_file" locale="en"
+	<operator key="operator.cryptography:pbe_encrypt_file" locale="en"
 		version="1.0.000">
 		<title>Decrypt File (Password)</title>
 		<synopsis>Operator for decrypting files that were encrypted with the
