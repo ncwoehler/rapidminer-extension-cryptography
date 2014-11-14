@@ -18,21 +18,10 @@
  */
 package com.rapidminer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-
 import com.rapidminer.cryptography.BCAlgorithmProvider;
 import com.rapidminer.cryptography.hashing.HashFunction;
 import com.rapidminer.cryptography.hashing.HashMatcherFunction;
 import com.rapidminer.gui.MainFrame;
-import com.rapidminer.repository.RepositoryException;
-import com.rapidminer.tools.FileSystemService;
-import com.rapidminer.tools.Tools;
 import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
 
 /**
@@ -42,8 +31,6 @@ import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
  */
 public class PluginInitCryptography {
 
-	public static final String BC_JAR_NAME = "bcprov-jdk15on-150.jar";
-
 	public static final String FUNCTION_GROUP = "Hash Functions";
 
 	/**
@@ -52,29 +39,6 @@ public class PluginInitCryptography {
 	 * operators or renderers has taken place when this is called.
 	 */
 	public static void initPlugin() {
-		try {
-			File rapidMinerUserFolder = FileSystemService
-					.getUserRapidMinerDir();
-			File encryptionDir = new File(rapidMinerUserFolder,
-					"encryption-provider");
-			if (!encryptionDir.exists()) {
-				encryptionDir.mkdir();
-			}
-			File bcprovider = new File(encryptionDir, BC_JAR_NAME);
-			if (!bcprovider.exists()) {
-				storeBCProviderToDisk(bcprovider);
-			}
-
-			// register bouncy castle provider to plugin classloader
-			registerBCProviderJar(bcprovider,
-					(URLClassLoader) PluginInitCryptography.class
-							.getClassLoader());
-
-			// initialize the BCProvider enum
-			BCAlgorithmProvider.INSTANCE.getProvider();
-		} catch (IOException | RepositoryException e) {
-			throw new RuntimeException("Error loading BC provider jar.", e);
-		}
 		registerDigestFunctions();
 	}
 
@@ -85,35 +49,6 @@ public class PluginInitCryptography {
 			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
 					new HashMatcherFunction(algo));
 		}
-	}
-
-	/**
-	 * Register specified .jar to provided class loader.
-	 */
-	private static void registerBCProviderJar(File jarFile,
-			URLClassLoader classLoader) throws IOException {
-		Class<?> sysclass = URLClassLoader.class;
-
-		try {
-			Method method = sysclass.getDeclaredMethod("addURL", URL.class);
-			method.setAccessible(true);
-			method.invoke(classLoader, new Object[] { jarFile.toURI().toURL() });
-		} catch (Throwable t) {
-			t.printStackTrace();
-			throw new IOException(
-					"Error, could not add URL to system classloader");
-		}
-	}
-
-	/**
-	 * Stores BouncyCastle provider jar from resources to disk.
-	 */
-	private static void storeBCProviderToDisk(File outputFile)
-			throws IOException, RepositoryException {
-		InputStream bcInput = Tools.getResourceInputStream("providers/"
-				+ BC_JAR_NAME);
-		Tools.copyStreamSynchronously(bcInput,
-				new FileOutputStream(outputFile), true);
 	}
 
 	/**
