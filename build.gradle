@@ -1,14 +1,20 @@
-apply plugin: 'rapidminer-extension'
+plugins {
+	id 'com.rapidminer.extension' version '0.6.2'
+}
 
-buildscript {
-	dependencies {
-		classpath 'com.rapidminer.gradle:extension:0.4.0'
+// Define Maven artifact repositories
+repositories {
+	jcenter()
+	maven {
+		url 'https://dl.bintray.com/rapidminer/public/'
+	}
+	maven {
+		url 'https://dl.bintray.com/rapidminer/open-source/'
 	}
 }
 
 dependencies {
 	compile 'org.jasypt:jasypt:1.9.1:lite'
-	provided 'org.bouncycastle:bcprov-jdk15on:1.50'
 	testCompile 'org.testng:testng:6.1.1'
 }
 
@@ -17,9 +23,11 @@ extensionConfig {
 	vendor 'Nils Woehler'
 	groupId 'com.github.ncwoehler'
 	homepage 'http://ncwoehler.github.io/rapidminer-extension-cryptography'
+	rapidminerHome '../rapidminer'
 
 	dependencies {
-		rapidminer '6.0.003'
+		rapidminer '6.1.0'
+		
 		extension namespace: 'text', version: '5.3.002'
 	}
 }
