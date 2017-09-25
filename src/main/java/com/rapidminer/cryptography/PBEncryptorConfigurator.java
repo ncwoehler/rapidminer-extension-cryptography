@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -43,26 +43,26 @@ import com.rapidminer.parameter.conditions.EqualTypeCondition;
  */
 public class PBEncryptorConfigurator {
 
-	public static final String PARAMETER_PASSWORD = "password";
+	private static final String PARAMETER_PASSWORD = "password";
 
-	public static final String PARAMETER_ALGORITHM_STRENGTH = "algorithm_strength";
-	public static final String WEAK_ALGORITHM = "weak";
-	public static final String MEDIUM_ALGORITHM = "medium";
-	public static final String STRONG_ALGORITHM = "strong";
-	public static final String USER_DEFINED_ALGORITHM = "user defined";
-	public static final String[] ALGORITHM_STRENGTHS = new String[] {
+	private static final String PARAMETER_ALGORITHM_STRENGTH = "algorithm_strength";
+	private static final String WEAK_ALGORITHM = "weak";
+	private static final String MEDIUM_ALGORITHM = "medium";
+	private static final String STRONG_ALGORITHM = "strong";
+	private static final String USER_DEFINED_ALGORITHM = "user defined";
+	private static final String[] ALGORITHM_STRENGTHS = new String[] {
 			WEAK_ALGORITHM, MEDIUM_ALGORITHM, STRONG_ALGORITHM,
 			USER_DEFINED_ALGORITHM };
-	public static final int USER_DEFINED_ALGORITHM_INDEX = 3;
+	private static final int USER_DEFINED_ALGORITHM_INDEX = 3;
 
-	public static final String PARAMETER_ALGORITHM = "algorithm";
+	private static final String PARAMETER_ALGORITHM = "algorithm";
 
-	public static final String WEAK_ALGORITHM_NAME = "PBEWITHSHA1ANDRC2";
-	public static final String MEDIUM_ALGORITHM_NAME = "PBEWITHMD5AND256BITAES-CBC-OPENSSL";
-	public static final String STRONG_ALGORITHM_NAME = "PBEWITHSHA256AND256BITAES-CBC-BC";
+	private static final String WEAK_ALGORITHM_NAME = "PBEWITHSHA1ANDRC2";
+	private static final String MEDIUM_ALGORITHM_NAME = "PBEWITHMD5AND256BITAES-CBC-OPENSSL";
+	private static final String STRONG_ALGORITHM_NAME = "PBEWITHSHA256AND256BITAES-CBC-BC";
 
 	// presented user defined algorithm in user friendly fashion
-	public static final String DEFAULT_USER_ALGORITHM_NAME = "MD5 and 256BITAES-CBC-OPENSSL";
+	private static final String DEFAULT_USER_ALGORITHM_NAME = "MD5 and 256BITAES-CBC-OPENSSL";
 
 	/**
 	 * Creates a byte encryptor according to the specified parameters.

@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,34 +18,32 @@
  */
 package com.rapidminer.cryptography.hashing;
 
-import com.rapidminer.tools.expression.parser.JEPFunctionException;
+import com.rapidminer.tools.expression.ExpressionParsingException;
+
 
 /**
  * 
- * A JEP function that checks whether the provided input matches a hash value
+ * A function that checks whether the provided input matches a hash value
  * created by a {@link HashFunction}.
  * 
  * @author Nils Woehler
  * 
  */
-public class HashMatcherFunction extends AbstractHashFunction<Boolean> {
+public class HashMatcherFunction extends AbstractHashFunction {
 
-	protected static final String PREFIX = "match_";
+	public static final String FUNCTION_GROUP = "Hash Matchers";
+	static final String PREFIX = "match_";
 
 	public HashMatcherFunction(String functionID) {
 		super(functionID, PREFIX + HashFunction.getHashFunctionName(functionID));
 	}
 
 	@Override
-	protected Boolean apply(DigesterConfig config, Object... arguments)
-			throws JEPFunctionException {
-		Object hash = arguments[arguments.length - 2];
-		if (!(hash instanceof String)) {
-			throw new JEPFunctionException(
-					"Wrong type for hash value. Only base64 encoded hash values are allowed!");
-		}
-		return DigesterProvider.INSTANCE.matches(arguments[arguments.length - 1],
-				(String) hash, config);
+	protected String apply(DigesterConfig config, String... arguments)
+			throws ExpressionParsingException {
+		String hash = arguments[arguments.length - 2];
+		return Boolean.toString(
+				DigesterProvider.INSTANCE.matches(arguments[arguments.length - 1], hash, config));
 	}
 
 	@Override
@@ -60,18 +58,17 @@ public class HashMatcherFunction extends AbstractHashFunction<Boolean> {
 
 	@Override
 	protected String getHelpText(String algorithm) {
-		return "<html><div style='width: 550px;'>Checks a value against a given BASE64 encoded "
-				+ algorithm
-				+ " hash. <b>This method has to use the same number of salt bytes and iterations that have been used to create the hash. Otherwise the result will always be false.</b>"
-				+ "<br/>As for all hash function the default number of salt bytes is 0 and the default number of iterations is 1."
-				+ "<ul>"
-				+ "<li>The first parameter defines the input that should be checked against the hash. </li>"
-				+ "<li>The second parameter defines the "
-				+ algorithm
-				+ " hash.</li>"
-				+ "<li>The third parameter is optional and defines the number of bytes that should be used as salt (Default: 0, Minimum: 0).</li>"
-				+ "<li>The fourth parameter is optional and defines the number of iterations (Default: 1, Minimum: 1).</li>"
-				+ "</ul></div><html>";
+		return "Checks a value against a given BASE64 encoded " + algorithm + " hash. "
+				+ "This method has to use the same number of salt bytes and iterations that have been used to create the hash. Otherwise the result will always be false."
+				+ "As for all hash function the default number of salt bytes is 0 and the default number of iterations is 1."
+				+ "The first parameter defines the input that should be checked against the hash. "
+				+ "The second parameter defines the " + algorithm + " hash."
+				+ "The third parameter is optional and defines the number of bytes that should be used as salt (Default: 0, Minimum: 0)."
+				+ "The fourth parameter is optional and defines the number of iterations (Default: 1, Minimum: 1).";
 	}
 
+	@Override
+	protected String getGroupName() {
+		return FUNCTION_GROUP;
+	}
 }

@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,6 @@ import com.rapidminer.operator.SimpleProcessSetupError;
 import com.rapidminer.operator.UserError;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
-import com.rapidminer.operator.ports.metadata.MDTransformationRule;
 import com.rapidminer.operator.text.Document;
 import com.rapidminer.operator.text.Token;
 import com.rapidminer.parameter.ParameterType;
@@ -48,8 +47,8 @@ import com.rapidminer.parameter.UndefinedParameterError;
  */
 public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 
-	public static final String DOCUMENT_INPUT = "document_input";
-	public static final String DOCUMENT_OUTPUT = "document_output";
+	private static final String DOCUMENT_INPUT = "document_input";
+	private static final String DOCUMENT_OUTPUT = "document_output";
 
 	/**
 	 * Used to test if encryption works with the current parameters.
@@ -63,23 +62,18 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 	private final OutputPort documentOut = getOutputPorts().createPort(
 			DOCUMENT_OUTPUT);
 
-	public AbstractPBDocumentCryptographyOperator(OperatorDescription description) {
+	AbstractPBDocumentCryptographyOperator(OperatorDescription description) {
 		super(description);
 		
-		getTransformer().addRule(new MDTransformationRule() {
-
-			@Override
-			public void transformMD() {
-				try {
-					PBEStringEncryptor encryptor = configureEncryptor();
-					encryptor.decrypt(encryptor.encrypt(RANDOM_TEXT));
-				} catch (Throwable t) {
-					addError(new SimpleProcessSetupError(Severity.ERROR,
-							getPortOwner(), "text.encryption_error", t
-									.getLocalizedMessage()));
-				}
+		getTransformer().addRule(() -> {
+			try {
+				PBEStringEncryptor encryptor = configureEncryptor();
+				encryptor.decrypt(encryptor.encrypt(RANDOM_TEXT));
+			} catch (Throwable t) {
+				addError(new SimpleProcessSetupError(Severity.ERROR,
+						getPortOwner(), "text.encryption_error", t
+								.getLocalizedMessage()));
 			}
-
 		});
 		getTransformer().addPassThroughRule(documentInput, documentOut);
 	}
@@ -110,7 +104,7 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 	/**
 	 * Creates and configures a string encryptor.
 	 */
-	protected PBEStringEncryptor configureEncryptor()
+	private PBEStringEncryptor configureEncryptor()
 			throws UndefinedParameterError {
 		return ALGORITHM_PROVIDER.configureStringEncryptor(this);
 	}
@@ -125,8 +119,7 @@ public abstract class AbstractPBDocumentCryptographyOperator extends Operator {
 	 *            the text being encrypted/decrypted
 	 * @return the encrypted/decrypted content
 	 */
-	protected abstract String transformText(
-			PBEStringEncryptor encryptor, String text) throws UserError;
+	protected abstract String transformText(PBEStringEncryptor encryptor, String text) throws UserError;
 
 	@Override
 	public List<ParameterType> getParameterTypes() {

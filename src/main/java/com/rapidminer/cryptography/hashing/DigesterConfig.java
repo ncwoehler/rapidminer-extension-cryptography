@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,9 @@ import org.jasypt.digest.config.SimpleDigesterConfig;
 
 import com.rapidminer.cryptography.BCAlgorithmProvider;
 
+import lombok.Data;
+
+
 /**
  * Container class that is being used to store values used for configuring
  * digesters. We cannot use {@link SimpleDigesterConfig} as hash key as
@@ -31,37 +34,14 @@ import com.rapidminer.cryptography.BCAlgorithmProvider;
  * @author Nils Woehler
  * 
  */
+@Data
 class DigesterConfig {
 
 	private String algorithm;
 	private int saltSize;
 	private int iterations;
 
-	public void setAlgorithm(String algorithm) {
-		this.algorithm = algorithm;
-	}
-
-	public void setSaltSize(int saltSize) {
-		this.saltSize = saltSize;
-	}
-
-	public void setIterations(int iterations) {
-		this.iterations = iterations;
-	}
-
-	protected int getIterations() {
-		return iterations;
-	}
-
-	protected String getAlgorithm() {
-		return algorithm;
-	}
-
-	protected int getSaltSize() {
-		return saltSize;
-	}
-
-	public org.jasypt.digest.config.DigesterConfig toDigesterConfig() {
+	org.jasypt.digest.config.DigesterConfig toDigesterConfig() {
 		SimpleDigesterConfig config = new SimpleDigesterConfig();
 		config.setProvider(BCAlgorithmProvider.INSTANCE.getProvider());
 		config.setIterations(getIterations());
@@ -72,36 +52,5 @@ class DigesterConfig {
 		return config;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((algorithm == null) ? 0 : algorithm.hashCode());
-		result = prime * result + iterations;
-		result = prime * result + saltSize;
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DigesterConfig other = (DigesterConfig) obj;
-		if (algorithm == null) {
-			if (other.algorithm != null)
-				return false;
-		} else if (!algorithm.equals(other.algorithm))
-			return false;
-		if (iterations != other.iterations)
-			return false;
-		if (saltSize != other.saltSize)
-			return false;
-		return true;
-	}
 
 }
