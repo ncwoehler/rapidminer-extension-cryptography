@@ -1,5 +1,5 @@
 plugins {
-	id 'com.rapidminer.extension' version '0.6.2'
+	id 'com.rapidminer.extension' version '0.9.3'
 }
 
 // Define Maven artifact repositories
@@ -14,8 +14,8 @@ repositories {
 }
 
 dependencies {
-	compile 'org.jasypt:jasypt:1.9.1:lite'
-	testCompile 'org.testng:testng:6.1.1'
+	compile 'org.jasypt:jasypt:1.9.2'
+	testCompile 'org.testng:testng:6.11'
 }
 
 extensionConfig {
@@ -23,10 +23,9 @@ extensionConfig {
 	vendor 'Nils Woehler'
 	groupId 'com.github.ncwoehler'
 	homepage 'http://ncwoehler.github.io/rapidminer-extension-cryptography'
-	rapidminerHome '../rapidminer'
 
 	dependencies {
-		rapidminer '6.1.0'
+		rapidminer '7.5.0'
 		
 		extension namespace: 'text', version: '5.3.002'
 	}
