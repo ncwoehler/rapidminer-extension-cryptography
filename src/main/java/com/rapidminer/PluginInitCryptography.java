@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,11 +18,18 @@
  */
 package com.rapidminer;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.rapidminer.cryptography.BCAlgorithmProvider;
 import com.rapidminer.cryptography.hashing.HashFunction;
 import com.rapidminer.cryptography.hashing.HashMatcherFunction;
 import com.rapidminer.gui.MainFrame;
-import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
+import com.rapidminer.tools.expression.Constant;
+import com.rapidminer.tools.expression.ExpressionParserModule;
+import com.rapidminer.tools.expression.ExpressionRegistry;
+import com.rapidminer.tools.expression.Function;
+
 
 /**
  * This class provides hooks for initialization.
@@ -31,7 +38,6 @@ import com.rapidminer.tools.expression.parser.AbstractExpressionParser;
  */
 public class PluginInitCryptography {
 
-	public static final String FUNCTION_GROUP = "Hash Functions";
 
 	/**
 	 * This method will be called directly after the extension is initialized.
@@ -39,15 +45,49 @@ public class PluginInitCryptography {
 	 * operators or renderers has taken place when this is called.
 	 */
 	public static void initPlugin() {
-		registerDigestFunctions();
+		registerHashFunctions();
 	}
 
-	private static void registerDigestFunctions() {
+	private static void registerHashFunctions() {
 		for (String algo : BCAlgorithmProvider.INSTANCE.getHashFunctions()) {
-			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
-					new HashFunction(algo));
-			AbstractExpressionParser.registerFunction(FUNCTION_GROUP,
-					new HashMatcherFunction(algo));
+
+			ExpressionParserModule module = new ExpressionParserModule() {
+
+				@Override
+				public String getKey() {
+					return HashFunction.FUNCTION_GROUP;
+				}
+
+				@Override
+				public List<Function> getFunctions() {
+					return Collections.singletonList(new HashFunction(algo));
+				}
+
+				@Override
+				public List<Constant> getConstants() {
+					return Collections.emptyList();
+				}
+			};
+			ExpressionRegistry.INSTANCE.register(module);
+
+			ExpressionParserModule matcherModule = new ExpressionParserModule() {
+
+				@Override
+				public String getKey() {
+					return HashMatcherFunction.FUNCTION_GROUP;
+				}
+
+				@Override
+				public List<Function> getFunctions() {
+					return Collections.singletonList(new HashMatcherFunction(algo));
+				}
+
+				@Override
+				public List<Constant> getConstants() {
+					return Collections.emptyList();
+				}
+			};
+			ExpressionRegistry.INSTANCE.register(matcherModule);
 		}
 	}
 

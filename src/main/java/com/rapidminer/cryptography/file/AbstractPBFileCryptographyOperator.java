@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -41,11 +41,8 @@ import com.rapidminer.operator.nio.file.FileInputPortHandler;
 import com.rapidminer.operator.nio.file.FileOutputPortHandler;
 import com.rapidminer.operator.ports.InputPort;
 import com.rapidminer.operator.ports.OutputPort;
-import com.rapidminer.operator.ports.Port;
-import com.rapidminer.operator.ports.metadata.MDTransformationRule;
 import com.rapidminer.parameter.ParameterType;
 import com.rapidminer.parameter.ParameterTypeBoolean;
-import com.rapidminer.parameter.PortProvider;
 import com.rapidminer.parameter.UndefinedParameterError;
 import com.rapidminer.tools.Tools;
 
@@ -59,10 +56,10 @@ import com.rapidminer.tools.Tools;
  */
 public abstract class AbstractPBFileCryptographyOperator extends Operator {
 
-	public static final String PARAMETER_FILE_INPUT = "file_input";
-	public static final String PARAMETER_FILE_OUTPUT = "file_output";
-	public static final String PARAMETER_BASE64 = "base64";
-	public static final String PARAMETER_OVERRIDE = "override";
+	private static final String PARAMETER_FILE_INPUT = "file_input";
+	private static final String PARAMETER_FILE_OUTPUT = "file_output";
+	private static final String PARAMETER_BASE64 = "base64";
+	private static final String PARAMETER_OVERRIDE = "override";
 
 	private final InputPort fileInput = getInputPorts()
 			.createPort("file input");
@@ -82,23 +79,18 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 
 	private static final PBEncryptorConfigurator ALGORITHM_PROVIDER = new PBEncryptorConfigurator();
 
-	public AbstractPBFileCryptographyOperator(OperatorDescription description) {
+	AbstractPBFileCryptographyOperator(OperatorDescription description) {
 		super(description);
 
-		getTransformer().addRule(new MDTransformationRule() {
-
-			@Override
-			public void transformMD() {
-				try {
-					PBEByteEncryptor encryptor = configureEncryptor();
-					encryptor.decrypt(encryptor.encrypt(RANDOM_BYTES));
-				} catch (Throwable t) {
-					addError(new SimpleProcessSetupError(Severity.ERROR,
-							getPortOwner(), "file.encryption_error", t
-									.getLocalizedMessage()));
-				}
+		getTransformer().addRule(() -> {
+			try {
+				PBEByteEncryptor encryptor = configureEncryptor();
+				encryptor.decrypt(encryptor.encrypt(RANDOM_BYTES));
+			} catch (Throwable t) {
+				addError(new SimpleProcessSetupError(Severity.ERROR,
+						getPortOwner(), "file.encryption_error", t
+								.getLocalizedMessage()));
 			}
-
 		});
 		getTransformer().addPassThroughRule(fileInput, fileOutput);
 	}
@@ -151,7 +143,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 	/**
 	 * Creates and configures a byte encryptor.
 	 */
-	protected PBEByteEncryptor configureEncryptor()
+	private PBEByteEncryptor configureEncryptor()
 			throws UndefinedParameterError {
 		return ALGORITHM_PROVIDER.configureByteEncryptor(this);
 	}
@@ -179,7 +171,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
 			int nRead;
-			byte[] data = new byte[16384];
+			byte[] data = new byte[16_384];
 
 			while ((nRead = fs.read(data, 0, data.length)) != -1) {
 				buffer.write(data, 0, nRead);
@@ -199,13 +191,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 		List<ParameterType> parameterTypes = super.getParameterTypes();
 		parameterTypes.add(FileInputPortHandler.makeFileParameterType(
 				getParameterHandler(), PARAMETER_FILE_INPUT, null,
-				new PortProvider() {
-
-					@Override
-					public Port getPort() {
-						return fileInput;
-					}
-				}));
+				() -> fileInput));
 
 		parameterTypes.addAll(ALGORITHM_PROVIDER.getParameterTypes(this));
 
@@ -214,13 +200,7 @@ public abstract class AbstractPBFileCryptographyOperator extends Operator {
 
 		parameterTypes.add(FileOutputPortHandler.makeFileParameterType(
 				getParameterHandler(), PARAMETER_FILE_OUTPUT,
-				new PortProvider() {
-
-					@Override
-					public Port getPort() {
-						return fileOutput;
-					}
-				}));
+				() -> fileOutput));
 
 		parameterTypes.add(new ParameterTypeBoolean(PARAMETER_OVERRIDE,
 				"If checked an already existing file will be overwritten.",

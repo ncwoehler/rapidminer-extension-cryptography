@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,16 +18,18 @@
  */
 package com.rapidminer.cryptography.hashing;
 
-import com.rapidminer.tools.expression.parser.JEPFunctionException;
+import com.rapidminer.tools.expression.ExpressionParsingException;
 
 /**
  * 
- * A JEP function that calculate the hash value of the provided input.
+ * A function that calculate the hash value of the provided input.
  * 
  * @author Nils Woehler
  * 
  */
-public class HashFunction extends AbstractHashFunction<String> {
+public class HashFunction extends AbstractHashFunction {
+
+	public static final String FUNCTION_GROUP = "Hash Functions";
 
 	public HashFunction(String algorithm) {
 		super(algorithm, getHashFunctionName(algorithm));
@@ -36,33 +38,27 @@ public class HashFunction extends AbstractHashFunction<String> {
 	/**
 	 * @return the function name to be used from within RapidMiner
 	 */
-	protected static String getHashFunctionName(String functionID) {
+	static String getHashFunctionName(String functionID) {
 		return functionID.replace("-", "").toLowerCase();
 	}
 
 	@Override
-	protected String apply(DigesterConfig config, Object... arguments)
-			throws JEPFunctionException {
-		return DigesterProvider.INSTANCE
-				.digest(arguments[arguments.length - 1], config);
+	protected String apply(DigesterConfig config, String... arguments)
+			throws ExpressionParsingException {
+		return DigesterProvider.INSTANCE.digest(arguments[arguments.length - 1], config);
 	}
 
 	@Override
 	protected String getHelpText(String algorithm) {
-		return "<html><div style='width: 550px;'>Calculates the BASE64 encoded "
-				+ algorithm
-				+ " hash value of the specified input. The default number of salt bytes is 0 and the default number of iterations is 1."
-				+ " The default values will return equal results for consecutive calls with the same input."
-				+ "<br/><br/> Increasing the number of salt bytes (e.g. to 8) will return different results consecutive calls with the same input."
+		return "Calculates the BASE64 encoded " + algorithm + " hash value of the specified input. " 
+				+ "The default number of salt bytes is 0 and the default number of iterations is 1."
+				+ "The default values will return equal results for consecutive calls with the same input."
+				+ "Increasing the number of salt bytes (e.g. to 8) will return different results consecutive calls with the same input."
 				+ "To check whether two hashes created with at least one salt byte are equal use '"
-				+ HashMatcherFunction.PREFIX
-				+ getFunctionName()
-				+ "'. "
-				+ "<ul>"
-				+ "<li>The first parameter defines the input for which the hash value should be calculated. </li>"
-				+ "<li>The second parameter is optional and defines the number of bytes that should be used as salt (Default: 0, Minimum: 0).</li>"
-				+ "<li>The third parameter is optional and defines the number of iterations (Default: 1, Minimum: 1).</li>"
-				+ "</ul></div><html>";
+				+ HashMatcherFunction.PREFIX + getFunctionName() + "'. "
+				+ "The first parameter defines the input for which the hash value should be calculated."
+				+ "The second parameter is optional and defines the number of bytes that should be used as salt (Default: 0, Minimum: 0)."
+				+ "The third parameter is optional and defines the number of iterations (Default: 1, Minimum: 1).";
 	}
 
 	@Override
@@ -75,4 +71,8 @@ public class HashFunction extends AbstractHashFunction<String> {
 		return 1;
 	}
 
+	@Override
+	protected String getGroupName() {
+		return FUNCTION_GROUP;
+	}
 }

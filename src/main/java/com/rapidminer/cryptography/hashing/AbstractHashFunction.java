@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,9 +18,10 @@
  */
 package com.rapidminer.cryptography.hashing;
 
-import com.rapidminer.tools.expression.parser.Function;
-import com.rapidminer.tools.expression.parser.FunctionDescription;
-import com.rapidminer.tools.expression.parser.JEPFunctionException;
+import com.rapidminer.tools.Ontology;
+import com.rapidminer.tools.expression.ExpressionParsingException;
+import com.rapidminer.tools.expression.FunctionDescription;
+import com.rapidminer.tools.expression.internal.function.AbstractArbitraryStringInputStringOutputFunction;
 
 /**
  * 
@@ -30,7 +31,7 @@ import com.rapidminer.tools.expression.parser.JEPFunctionException;
  * @author Nils Woehler
  * 
  */
-public abstract class AbstractHashFunction<T> implements Function {
+public abstract class AbstractHashFunction extends AbstractArbitraryStringInputStringOutputFunction {
 
 	/**
 	 * The algorithm name used to select the algorithm from the algorithm
@@ -43,31 +44,14 @@ public abstract class AbstractHashFunction<T> implements Function {
 	 */
 	private String functionName;
 
-	public AbstractHashFunction(String algorithm, String functionName) {
+	AbstractHashFunction(String algorithm, String functionName) {
+		super(functionName, -1);
 		this.algorithm = algorithm;
 		this.functionName = functionName;
 	}
 
 	@Override
-	public Object compute(Object... arguments) throws JEPFunctionException {
-
-		// input sanity checks
-		if (arguments.length < getMinArguments()) {
-			String errorMessage = "Missing input. For " + getFunctionName()
-					+ " at least " + getMinArguments();
-			if (getMinArguments() > 1) {
-				errorMessage += " arguments are required.";
-			} else {
-				errorMessage += " argument is required.";
-			}
-			throw new JEPFunctionException(errorMessage);
-		}
-
-		if (arguments.length > getMaxArguments()) {
-			throw new JEPFunctionException("Too many arguments. For "
-					+ getFunctionName() + " a maximum of " + getMaxArguments()
-					+ " arguments is supported.");
-		}
+	public String compute(String... arguments) throws ExpressionParsingException {
 
 		DigesterConfig config = new DigesterConfig();
 		config.setAlgorithm(algorithm);
@@ -82,10 +66,56 @@ public abstract class AbstractHashFunction<T> implements Function {
 	}
 
 	@Override
+	protected void checkNumberOfInputs(int length) {
+		// input sanity checks
+		if (length < getMinArguments()) {
+			String errorMessage = "Missing input. For " + getFunctionName()
+					+ " at least " + getMinArguments();
+			if (getMinArguments() > 1) {
+				errorMessage += " arguments are required.";
+			} else {
+				errorMessage += " argument is required.";
+			}
+			throw createException(errorMessage);
+		}
+
+		if (length > getMaxArguments()) {
+			throw createException("Too many arguments. For "
+					+ getFunctionName() + " a maximum of " + getMaxArguments()
+					+ " arguments is supported.");
+		}
+	}
+
+	@Override
 	public FunctionDescription getFunctionDescription() {
-		return new FunctionDescription(functionName + "()", algorithm,
-				getHelpText(algorithm),
-				FunctionDescription.UNLIMITED_NUMBER_OF_ARGUMENTS);
+		// hack to override FunctionDescription internals
+		return new FunctionDescription("someKey", -1, Ontology.NOMINAL) {
+
+			@Override
+			public String getDescription() {
+				return getHelpText(algorithm);
+			}
+
+			@Override
+			public String getGroupName() {
+				return AbstractHashFunction.this.getGroupName();
+			}
+
+			@Override
+			public String getDisplayName() {
+				return functionName + "()";
+			}
+
+			@Override
+			public String getHelpTextName() {
+				return functionName;
+			}
+
+			@Override
+			public String getFunctionNameWithParameters() {
+				return functionName;
+			}
+		};
 	}
 
 	@Override
@@ -93,8 +123,8 @@ public abstract class AbstractHashFunction<T> implements Function {
 		return functionName;
 	}
 
-	private Integer getIterations(Object... arguments)
-			throws JEPFunctionException {
+	private Integer getIterations(String... arguments)
+			throws ExpressionParsingException {
 
 		// If iterations are not defined use the default number of iterations
 		if (arguments.length != getMaxArguments()) {
@@ -104,24 +134,25 @@ public abstract class AbstractHashFunction<T> implements Function {
 		// get iterations from arguments (iterations is always the last
 		// argument for the function, so first argument in the argument list as
 		// it is provided in reverse order) and do some sanity checks
-		Object arg2 = arguments[0];
+		String arg2 = arguments[0];
 		int numberOfIterations = 1;
-		if (arg2 instanceof Number) {
-			numberOfIterations = ((Number) arg2).intValue();
-		} else {
-			throw new JEPFunctionException(
-					"Wrong input type for number of iterations argument. Only numbers are allowed.");
+		if (arg2 != null) {
+			try {
+				numberOfIterations = Integer.parseInt(arg2);
+			} catch(NumberFormatException e) {
+				throw createException("Cannot read number of iterations: " + e.getMessage());
+			}
 		}
 		if (numberOfIterations < 1) {
-			throw new JEPFunctionException(
+			throw createException(
 					"The number of iterations has to be >= 1. Specified number of iterations: "
 							+ numberOfIterations);
 		}
 		return numberOfIterations;
 	}
 
-	private Integer getSaltSize(Object... arguments)
-			throws JEPFunctionException {
+	private Integer getSaltSize(String... arguments)
+			throws ExpressionParsingException {
 
 		// if no salt size is defined, return default value
 		if (arguments.length < (getMaxArguments() - 1)) {
@@ -138,27 +169,27 @@ public abstract class AbstractHashFunction<T> implements Function {
 		if (arguments.length == getMaxArguments()) {
 			++index;
 		}
-		Object arg1 = arguments[index];
+		String arg1 = arguments[index];
 		Integer saltSize = 8;
-		if (arg1 instanceof Number) {
-			saltSize = ((Number) arg1).intValue();
-		} else {
-			throw new JEPFunctionException(
-					"Wrong input type for salt size argument. Only numbers are allowed.");
+		if (arg1 != null) {
+			try {
+				saltSize = Integer.parseInt(arg1);
+			} catch(NumberFormatException e) {
+				throw createException("Cannot read salt size: " + e.getMessage());
+			}
 		}
 		if (saltSize < 0) {
-			throw new JEPFunctionException("The salt size has to be >= 0. "
+			throw createException("The salt size has to be >= 0. "
 					+ "Specified salt size: " + saltSize);
 		}
 		return saltSize;
 	}
 
 	/**
-	 * Apply a custom digester function with the specified
-	 * {@link DigesterConfig}.
+	 * Apply a custom digester function with the specified {@link DigesterConfig}.
 	 */
-	protected abstract T apply(DigesterConfig config, Object... arguments)
-			throws JEPFunctionException;
+	protected abstract String apply(DigesterConfig config, String... arguments)
+			throws ExpressionParsingException;
 
 	/**
 	 * Defines the maximum number of arguments for the RapidMiner function.
@@ -170,9 +201,15 @@ public abstract class AbstractHashFunction<T> implements Function {
 	 */
 	protected abstract int getMinArguments();
 
+	protected abstract String getGroupName();
+
 	/**
 	 * @return the help text displayed when hovering over the function button
 	 */
 	protected abstract String getHelpText(String algorithm);
+
+	static ExpressionParsingException createException(String message) {
+		return new ExpressionParsingException(new IllegalArgumentException(message));
+	}
 
 }

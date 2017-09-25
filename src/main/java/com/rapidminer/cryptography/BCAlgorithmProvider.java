@@ -1,7 +1,7 @@
-/**
+/*
  * RapidMiner Cryptography Extension
  *
- * Copyright (C) 2014-2014 by Nils Woehler
+ * Copyright (C) 2014-2017 by Nils Woehler
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -95,10 +95,10 @@ public enum BCAlgorithmProvider {
 				}
 			}
 		}
-		List<String> sortedAlgorithmNameList = new LinkedList<String>(
+		List<String> sortedAlgorithmNameList = new LinkedList<>(
 				algorithmNames);
-		Collections.sort(sortedAlgorithmNameList, Collections.reverseOrder());
-		return new ArrayList<Object>(sortedAlgorithmNameList);
+		sortedAlgorithmNameList.sort(Collections.reverseOrder());
+		return new ArrayList<>(sortedAlgorithmNameList);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public enum BCAlgorithmProvider {
 	 *         a hash
 	 */
 	public List<String> getHashFunctions() {
-		List<String> algos = new ArrayList<String>();
+		List<String> algos = new ArrayList<>();
 		for(Service service : BCAlgorithmProvider.INSTANCE.getProvider().getServices()) {
 			if("MessageDigest".equals(service.getType())) {
 				algos.add(service.getAlgorithm());
@@ -124,7 +124,7 @@ public enum BCAlgorithmProvider {
 	 * Converts the algorithm ID into human readable by removing the leading
 	 * 'PBEWITH' and replacing AND by ' and '.
 	 */
-	public static final String toHumandReadable(String algorithmName) {
+	public static String toHumandReadable(String algorithmName) {
 		return algorithmName.substring(7).replaceFirst("AND", " and ");
 	}
 
@@ -132,7 +132,7 @@ public enum BCAlgorithmProvider {
 	 * Converts a human readable algorithm back to the algorithm ID format that
 	 * is being used to select algorithms from the BouncyCastle provider.
 	 */
-	public static final String toAlgorithmID(String humandReadable) {
+	public static String toAlgorithmID(String humandReadable) {
 		return "PBEWITH" + humandReadable.replaceFirst(" and ", "AND");
 	}
 
